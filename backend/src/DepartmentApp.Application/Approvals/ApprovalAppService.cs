@@ -276,13 +276,13 @@ namespace DepartmentApp.Approvals
                 var rootNs = GetType().Namespace?.Split('.')[0] ?? "DepartmentApp";
                 var pluralNs = $"{rootNs}.{entityType}s";
                 var ifaceTypeName = $"{pluralNs}.I{entityType}AppService, {rootNs}.Application";
-                var iface = Type.GetType(ifaceTypeName);
+                var iface = System.Type.GetType(ifaceTypeName);
                 if (iface == null) { Logger.Warn($"No app service interface for entity '{entityType}' (looked for {ifaceTypeName})"); return; }
 
                 var method = iface.GetMethod("ChangeStatusAsync");
                 if (method == null) { Logger.Warn($"{iface.Name} has no ChangeStatusAsync method; skipping status update."); return; }
 
-                var changeStatusInputType = Type.GetType($"{pluralNs}.Dto.ChangeStatusInput, {rootNs}.Application");
+                var changeStatusInputType = System.Type.GetType($"{pluralNs}.Dto.ChangeStatusInput, {rootNs}.Application");
                 if (changeStatusInputType == null) { Logger.Warn($"ChangeStatusInput type missing for '{entityType}'"); return; }
 
                 var changeInput = Activator.CreateInstance(changeStatusInputType);
@@ -308,10 +308,10 @@ namespace DepartmentApp.Approvals
             }
         }
 
-        private Type ResolveEntityClrType(string entityType)
+        private System.Type ResolveEntityClrType(string entityType)
         {
             var rootNs = GetType().Namespace?.Split('.')[0] ?? "DepartmentApp";
-            return Type.GetType($"{rootNs}.Entities.{entityType}, {rootNs}.Core");
+            return System.Type.GetType($"{rootNs}.Entities.{entityType}, {rootNs}.Core");
         }
 
         public async Task<List<ApprovalRecordDto>> GetApprovalHistoryAsync(string entityType, string entityId)

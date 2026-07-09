@@ -260,12 +260,12 @@ namespace DepartmentApp.Flows
                         {
                             // Resolve ApprovalAppService through DI (Castle Windsor / IIocResolver)
                             var iocResolver = _serviceProvider.GetService(typeof(Abp.Dependency.IIocResolver)) as Abp.Dependency.IIocResolver;
-                            var appServiceType = Type.GetType("DepartmentApp.Approvals.IApprovalAppService, DepartmentApp.Application")
+                            var appServiceType = System.Type.GetType("DepartmentApp.Approvals.IApprovalAppService, DepartmentApp.Application")
                                 ?? throw new InvalidOperationException("IApprovalAppService type not found in DepartmentApp.Application assembly");
                             var approvalSvc = iocResolver?.Resolve(appServiceType)
                                 ?? throw new InvalidOperationException("ApprovalAppService not registered with DI container");
 
-                            var submitInputType = Type.GetType("DepartmentApp.Approvals.Dto.SubmitApprovalInput, DepartmentApp.Application")!;
+                            var submitInputType = System.Type.GetType("DepartmentApp.Approvals.Dto.SubmitApprovalInput, DepartmentApp.Application")!;
                             var submitInput = Activator.CreateInstance(submitInputType)!;
                             submitInputType.GetProperty("EntityType")!.SetValue(submitInput, entityType);
                             submitInputType.GetProperty("EntityId")!.SetValue(submitInput, entityId);

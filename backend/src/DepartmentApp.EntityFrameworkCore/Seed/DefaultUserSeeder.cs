@@ -102,7 +102,7 @@ namespace DepartmentApp.EntityFrameworkCore.Seed
                     customRole_0.Id = _roleRepo.InsertAndGetId(customRole_0);
                     Console.WriteLine($"[Seed] Created custom role 'HRSpecialist' (id={customRole_0.Id})");
                 }
-                var customPerms_0 = new[] { "Employee.Read", "Employee.Create", "Employee.Update", "Employee.Delete", "Employee.ChangeStatus", "LeaveRequest.Read", "LeaveRequest.Create", "LeaveRequest.Update", "LeaveRequest.Delete", "LeaveRequest.ChangeStatus", "JobPosting.Read", "JobPosting.Create", "JobPosting.Update", "JobPosting.Delete", "JobPosting.ChangeStatus", "JobApplication.Read", "JobApplication.Create", "JobApplication.Update", "JobApplication.Delete", "JobApplication.ChangeStatus", "Onboarding.Read", "Onboarding.Create", "Onboarding.Update", "Onboarding.Delete", "Onboarding.ChangeStatus", "SalaryRecord.Read", "SalaryRecord.Create", "SalaryRecord.Update", "SalaryRecord.Delete", "SalaryRecord.ChangeStatus", "SalaryDeduction.Read", "SalaryDeduction.Create", "SalaryDeduction.Update", "SalaryDeduction.Delete", "SalaryDeduction.ChangeStatus", "TrainingPlan.Read", "TrainingPlan.Create", "TrainingPlan.Update", "TrainingPlan.Delete", "TrainingPlan.ChangeStatus", "Training.Read", "Training.Create", "Training.Update", "Training.Delete", "Training.ChangeStatus", "TrainingParticipation.Read", "TrainingParticipation.Create", "TrainingParticipation.Update", "TrainingParticipation.Delete", "TrainingParticipation.ChangeStatus", "PerformanceReview.Read", "PerformanceReview.Create", "PerformanceReview.Update", "PerformanceReview.Delete", "PerformanceReview.ChangeStatus", "EmployeeCertificate.Read", "EmployeeCertificate.Create", "EmployeeCertificate.Update", "EmployeeCertificate.Delete", "EmployeeCertificate.ChangeStatus", "LeaveType.Read", "LeaveType.Create", "LeaveType.Update", "LeaveType.Delete", "LeaveType.ChangeStatus", "DisciplinaryRecord.Read", "DisciplinaryRecord.Create", "DisciplinaryRecord.Update", "DisciplinaryRecord.Delete", "DisciplinaryRecord.ChangeStatus", "OvertimeRecord.Read", "OvertimeRecord.Create", "OvertimeRecord.Update", "OvertimeRecord.Delete", "OvertimeRecord.ChangeStatus" };
+                var customPerms_0 = new string[] { "Employee.Read", "Employee.Create", "Employee.Update", "Employee.Delete", "Employee.ChangeStatus", "LeaveRequest.Read", "LeaveRequest.Create", "LeaveRequest.Update", "LeaveRequest.Delete", "LeaveRequest.ChangeStatus", "JobPosting.Read", "JobPosting.Create", "JobPosting.Update", "JobPosting.Delete", "JobPosting.ChangeStatus", "JobApplication.Read", "JobApplication.Create", "JobApplication.Update", "JobApplication.Delete", "JobApplication.ChangeStatus", "Onboarding.Read", "Onboarding.Create", "Onboarding.Update", "Onboarding.Delete", "Onboarding.ChangeStatus", "SalaryRecord.Read", "SalaryRecord.Create", "SalaryRecord.Update", "SalaryRecord.Delete", "SalaryRecord.ChangeStatus", "SalaryDeduction.Read", "SalaryDeduction.Create", "SalaryDeduction.Update", "SalaryDeduction.Delete", "SalaryDeduction.ChangeStatus", "TrainingPlan.Read", "TrainingPlan.Create", "TrainingPlan.Update", "TrainingPlan.Delete", "TrainingPlan.ChangeStatus", "Training.Read", "Training.Create", "Training.Update", "Training.Delete", "Training.ChangeStatus", "TrainingParticipation.Read", "TrainingParticipation.Create", "TrainingParticipation.Update", "TrainingParticipation.Delete", "TrainingParticipation.ChangeStatus", "PerformanceReview.Read", "PerformanceReview.Create", "PerformanceReview.Update", "PerformanceReview.Delete", "PerformanceReview.ChangeStatus", "EmployeeCertificate.Read", "EmployeeCertificate.Create", "EmployeeCertificate.Update", "EmployeeCertificate.Delete", "EmployeeCertificate.ChangeStatus", "LeaveType.Read", "LeaveType.Create", "LeaveType.Update", "LeaveType.Delete", "LeaveType.ChangeStatus", "DisciplinaryRecord.Read", "DisciplinaryRecord.Create", "DisciplinaryRecord.Update", "DisciplinaryRecord.Delete", "DisciplinaryRecord.ChangeStatus", "OvertimeRecord.Read", "OvertimeRecord.Create", "OvertimeRecord.Update", "OvertimeRecord.Delete", "OvertimeRecord.ChangeStatus" };
                 var customGranted_0 = _rolePermRepo.GetAll().Where(p => p.RoleId == customRole_0.Id).Select(p => p.PermissionName).ToList();
                 var allPermSet_0 = new HashSet<string>(_permRegistry.All.Select(p => p.Name));
                 foreach (var pn in customPerms_0.Except(customGranted_0))
@@ -119,7 +119,7 @@ namespace DepartmentApp.EntityFrameworkCore.Seed
                     customRole_1.Id = _roleRepo.InsertAndGetId(customRole_1);
                     Console.WriteLine($"[Seed] Created custom role 'HRManager' (id={customRole_1.Id})");
                 }
-                var customPerms_1 = new[] {  };
+                var customPerms_1 = new string[] {  };
                 var customGranted_1 = _rolePermRepo.GetAll().Where(p => p.RoleId == customRole_1.Id).Select(p => p.PermissionName).ToList();
                 var allPermSet_1 = new HashSet<string>(_permRegistry.All.Select(p => p.Name));
                 foreach (var pn in customPerms_1.Except(customGranted_1))
@@ -136,7 +136,7 @@ namespace DepartmentApp.EntityFrameworkCore.Seed
                     customRole_2.Id = _roleRepo.InsertAndGetId(customRole_2);
                     Console.WriteLine($"[Seed] Created custom role 'DepartmentManager' (id={customRole_2.Id})");
                 }
-                var customPerms_2 = new[] { "Employee.Read", "LeaveRequest.Read", "LeaveRequest.ChangeStatus", "PerformanceReview.Read", "PerformanceReview.Update", "PerformanceReview.ChangeStatus", "PerformanceGoal.Read", "PerformanceGoal.Update", "Training.Read", "TrainingParticipation.Read", "DisciplinaryRecord.Create", "DisciplinaryRecord.Read", "DisciplinaryRecord.Update", "OvertimeRecord.Read", "OvertimeRecord.ChangeStatus" };
+                var customPerms_2 = new string[] { "Employee.Read", "LeaveRequest.Read", "LeaveRequest.ChangeStatus", "PerformanceReview.Read", "PerformanceReview.Update", "PerformanceReview.ChangeStatus", "PerformanceGoal.Read", "PerformanceGoal.Update", "Training.Read", "TrainingParticipation.Read", "DisciplinaryRecord.Create", "DisciplinaryRecord.Read", "DisciplinaryRecord.Update", "OvertimeRecord.Read", "OvertimeRecord.ChangeStatus" };
                 var customGranted_2 = _rolePermRepo.GetAll().Where(p => p.RoleId == customRole_2.Id).Select(p => p.PermissionName).ToList();
                 var allPermSet_2 = new HashSet<string>(_permRegistry.All.Select(p => p.Name));
                 foreach (var pn in customPerms_2.Except(customGranted_2))
@@ -153,7 +153,7 @@ namespace DepartmentApp.EntityFrameworkCore.Seed
                     customRole_3.Id = _roleRepo.InsertAndGetId(customRole_3);
                     Console.WriteLine($"[Seed] Created custom role 'GeneralManager' (id={customRole_3.Id})");
                 }
-                var customPerms_3 = new[] {  };
+                var customPerms_3 = new string[] {  };
                 var customGranted_3 = _rolePermRepo.GetAll().Where(p => p.RoleId == customRole_3.Id).Select(p => p.PermissionName).ToList();
                 var allPermSet_3 = new HashSet<string>(_permRegistry.All.Select(p => p.Name));
                 foreach (var pn in customPerms_3.Except(customGranted_3))
@@ -170,7 +170,7 @@ namespace DepartmentApp.EntityFrameworkCore.Seed
                     customRole_4.Id = _roleRepo.InsertAndGetId(customRole_4);
                     Console.WriteLine($"[Seed] Created custom role 'Employee' (id={customRole_4.Id})");
                 }
-                var customPerms_4 = new[] { "Employee.Read", "LeaveRequest.Create", "LeaveRequest.Read", "PerformanceReview.Read", "PerformanceGoal.Create", "PerformanceGoal.Read", "PerformanceGoal.Update", "PeerReview.Create", "TrainingParticipation.Read", "EmployeeCertificate.Read", "OvertimeRecord.Create", "OvertimeRecord.Read", "DisciplinaryRecord.Read" };
+                var customPerms_4 = new string[] { "Employee.Read", "LeaveRequest.Create", "LeaveRequest.Read", "PerformanceReview.Read", "PerformanceGoal.Create", "PerformanceGoal.Read", "PerformanceGoal.Update", "PeerReview.Create", "TrainingParticipation.Read", "EmployeeCertificate.Read", "OvertimeRecord.Create", "OvertimeRecord.Read", "DisciplinaryRecord.Read" };
                 var customGranted_4 = _rolePermRepo.GetAll().Where(p => p.RoleId == customRole_4.Id).Select(p => p.PermissionName).ToList();
                 var allPermSet_4 = new HashSet<string>(_permRegistry.All.Select(p => p.Name));
                 foreach (var pn in customPerms_4.Except(customGranted_4))
