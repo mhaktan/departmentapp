@@ -386,7 +386,7 @@ export const DashboardScreen: React.FC = () => {
           )}
 
         </div>
-        <div style={{ gridColumn: 'span 6' }}>
+        <div style={{ gridColumn: 'span 3' }}>
           {api_block_5Loading ? (
             <TkCard>
               <div slot="content" style={{ padding: 20 }}>
@@ -405,7 +405,7 @@ export const DashboardScreen: React.FC = () => {
           )}
 
         </div>
-        <div style={{ gridColumn: 'span 6' }}>
+        <div style={{ gridColumn: 'span 3' }}>
           {api_block_6Loading ? (
             <TkCard>
               <div slot="content" style={{ padding: 20 }}>

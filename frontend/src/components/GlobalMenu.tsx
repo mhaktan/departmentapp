@@ -40,83 +40,83 @@ const MENU_ITEMS: MenuItem[] = [
     "icon": "dashboard"
   },
   {
-    "label": "Department",
+    "label": "Departman",
     "path": "/Department"
   },
   {
-    "label": "Branch",
+    "label": "Şube",
     "path": "/Branch"
   },
   {
-    "label": "Employee",
+    "label": "Personel",
     "path": "/Employee"
   },
   {
-    "label": "EmployeeCertificate",
+    "label": "Personel Sertifikası",
     "path": "/EmployeeCertificate"
   },
   {
-    "label": "DisciplinaryRecord",
+    "label": "Disiplin Kaydı",
     "path": "/DisciplinaryRecord"
   },
   {
-    "label": "OvertimeRecord",
+    "label": "Fazla Mesai Kaydı",
     "path": "/OvertimeRecord"
   },
   {
-    "label": "LeaveType",
+    "label": "İzin Türü",
     "path": "/LeaveType"
   },
   {
-    "label": "LeaveRequest",
+    "label": "İzin Talebi",
     "path": "/LeaveRequest"
   },
   {
-    "label": "PerformanceReview",
+    "label": "Performans Değerlendirmesi",
     "path": "/PerformanceReview"
   },
   {
-    "label": "PerformanceGoal",
+    "label": "Performans Hedefi",
     "path": "/PerformanceGoal"
   },
   {
-    "label": "PeerReview",
+    "label": "360 Derece Geri Bildirim",
     "path": "/PeerReview"
   },
   {
-    "label": "JobPosting",
+    "label": "İş İlanı",
     "path": "/JobPosting"
   },
   {
-    "label": "JobApplication",
+    "label": "İş Başvurusu",
     "path": "/JobApplication"
   },
   {
-    "label": "Onboarding",
+    "label": "İşe Alım / Oryantasyon",
     "path": "/Onboarding"
   },
   {
-    "label": "OnboardingTask",
+    "label": "Oryantasyon Görevi",
     "path": "/OnboardingTask"
   },
   {
-    "label": "SalaryRecord",
+    "label": "Maaş Kaydı",
     "path": "/SalaryRecord"
   },
   {
-    "label": "SalaryDeduction",
+    "label": "Maaş Kesintisi",
     "path": "/SalaryDeduction"
   },
   {
-    "label": "TrainingPlan",
+    "label": "Eğitim Planı",
     "path": "/TrainingPlan"
   },
   {
-    "label": "Training",
+    "label": "Eğitim",
     "path": "/Training"
   },
   {
-    "label": "TrainingParticipation",
+    "label": "Eğitim Katılımı",
     "path": "/TrainingParticipation"
   },
   {
