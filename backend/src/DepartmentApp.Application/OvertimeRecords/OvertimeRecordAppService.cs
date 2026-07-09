@@ -53,7 +53,7 @@ namespace DepartmentApp.OvertimeRecords
                 .WhereIf(!input.Notes.IsNullOrWhiteSpace(), x => x.Notes != null && x.Notes.Contains(input.Notes))
                 .WhereIf(input.OvertimeDate.HasValue, x => x.OvertimeDate == input.OvertimeDate.Value)
                 .WhereIf(input.Hours.HasValue, x => x.Hours == input.Hours.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (OvertimeRecordStatus)input.Status.Value)
                 .WhereIf(input.ManagerApproverId.HasValue, x => x.ManagerApproverId == input.ManagerApproverId.Value)
                 .WhereIf(input.EmployeeId.HasValue, x => x.EmployeeId == input.EmployeeId.Value);
         }
@@ -66,7 +66,7 @@ namespace DepartmentApp.OvertimeRecords
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Pending)
+            if (result.Status != (int)OvertimeRecordStatus.Pending)
                 await _flowEngine.TriggerAsync("on-field-change", "OvertimeRecord", result);
             return result;
         }
@@ -79,8 +79,8 @@ namespace DepartmentApp.OvertimeRecords
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((OvertimeRecordStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (OvertimeRecordStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -136,7 +136,7 @@ namespace DepartmentApp.OvertimeRecords
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (OvertimeRecordStatus)Enum.Parse(typeof(OvertimeRecordStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -180,7 +180,7 @@ namespace DepartmentApp.OvertimeRecords
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(OvertimeRecordStatus from, OvertimeRecordStatus to)
         {
             var allowed = new (string From, string To)[]
             {

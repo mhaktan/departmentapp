@@ -18,9 +18,9 @@ namespace DepartmentApp.Entities
 
         public int ReviewYear { get; set; }
 
-        public ReviewType ReviewType { get; set; }
+        public PerformanceReviewReviewType ReviewType { get; set; }
 
-        public Status Status { get; set; }
+        public PerformanceReviewStatus Status { get; set; }
 
         public decimal? SelfAssessmentScore { get; set; }
 

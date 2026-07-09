@@ -48,7 +48,7 @@ namespace DepartmentApp.SalaryRecords
                 .WhereIf(input.EffectiveDate.HasValue, x => x.EffectiveDate == input.EffectiveDate.Value)
                 .WhereIf(input.GrossSalary.HasValue, x => x.GrossSalary == input.GrossSalary.Value)
                 .WhereIf(input.NetSalary.HasValue, x => x.NetSalary == input.NetSalary.Value)
-                .WhereIf(input.SalaryType.HasValue, x => x.SalaryType == (SalaryType)input.SalaryType.Value)
+                .WhereIf(input.SalaryType.HasValue, x => x.SalaryType == (SalaryRecordSalaryType)input.SalaryType.Value)
                 .WhereIf(input.EmployeeId.HasValue, x => x.EmployeeId == input.EmployeeId.Value);
         }
 

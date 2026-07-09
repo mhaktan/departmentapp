@@ -24,13 +24,13 @@ namespace DepartmentApp.Entities
 
         public int PositionCount { get; set; }
 
-        public Status Status { get; set; }
+        public JobPostingStatus Status { get; set; }
 
         public DateTime? PublishDate { get; set; }
 
         public DateTime? ClosingDate { get; set; }
 
-        public EmploymentType EmploymentType { get; set; }
+        public JobPostingEmploymentType EmploymentType { get; set; }
 
         public long DepartmentId { get; set; }
 

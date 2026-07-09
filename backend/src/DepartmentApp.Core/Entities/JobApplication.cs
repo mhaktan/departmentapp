@@ -30,7 +30,7 @@ namespace DepartmentApp.Entities
         [MaxLength(3000)]
         public string CoverLetter { get; set; }
 
-        public Status Status { get; set; }
+        public JobApplicationStatus Status { get; set; }
 
         [MaxLength(1000)]
         public string ScreeningNotes { get; set; }

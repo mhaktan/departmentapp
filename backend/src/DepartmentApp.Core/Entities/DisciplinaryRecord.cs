@@ -14,7 +14,7 @@ namespace DepartmentApp.Entities
     {
         public DateTime IncidentDate { get; set; }
 
-        public Type Type { get; set; }
+        public DisciplinaryRecordType Type { get; set; }
 
         [Required]
         [MaxLength(2000)]
@@ -28,7 +28,7 @@ namespace DepartmentApp.Entities
 
         public bool AcknowledgedByEmployee { get; set; }
 
-        public Status Status { get; set; }
+        public DisciplinaryRecordStatus Status { get; set; }
 
         [MaxLength(1000)]
         public string AppealNote { get; set; }

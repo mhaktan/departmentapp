@@ -31,7 +31,7 @@ namespace DepartmentApp.Entities
 
         public DateTime? BirthDate { get; set; }
 
-        public Gender? Gender { get; set; }
+        public EmployeeGender? Gender { get; set; }
 
         [MaxLength(20)]
         public string NationalId { get; set; }
@@ -46,9 +46,9 @@ namespace DepartmentApp.Entities
         [MaxLength(200)]
         public string JobTitle { get; set; }
 
-        public EmploymentType EmploymentType { get; set; }
+        public EmployeeEmploymentType EmploymentType { get; set; }
 
-        public Status Status { get; set; }
+        public EmployeeStatus Status { get; set; }
 
         [MaxLength(200)]
         public string EmergencyContactName { get; set; }

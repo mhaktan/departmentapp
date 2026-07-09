@@ -16,7 +16,7 @@ namespace DepartmentApp.Entities
 
         public DateTime? ExpectedCompletionDate { get; set; }
 
-        public Status Status { get; set; }
+        public OnboardingStatus Status { get; set; }
 
         [MaxLength(2000)]
         public string Notes { get; set; }

@@ -49,7 +49,7 @@ namespace DepartmentApp.Onboardings
                 .WhereIf(!input.Notes.IsNullOrWhiteSpace(), x => x.Notes != null && x.Notes.Contains(input.Notes))
                 .WhereIf(input.StartDate.HasValue, x => x.StartDate == input.StartDate.Value)
                 .WhereIf(input.ExpectedCompletionDate.HasValue, x => x.ExpectedCompletionDate == input.ExpectedCompletionDate.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (OnboardingStatus)input.Status.Value)
                 .WhereIf(input.JobApplicationId.HasValue, x => x.JobApplicationId == input.JobApplicationId.Value);
         }
 
@@ -61,7 +61,7 @@ namespace DepartmentApp.Onboardings
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.NotStarted)
+            if (result.Status != (int)OnboardingStatus.NotStarted)
                 await _flowEngine.TriggerAsync("on-field-change", "Onboarding", result);
             return result;
         }
@@ -74,8 +74,8 @@ namespace DepartmentApp.Onboardings
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((OnboardingStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (OnboardingStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -131,7 +131,7 @@ namespace DepartmentApp.Onboardings
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (OnboardingStatus)Enum.Parse(typeof(OnboardingStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -172,7 +172,7 @@ namespace DepartmentApp.Onboardings
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(OnboardingStatus from, OnboardingStatus to)
         {
             var allowed = new (string From, string To)[]
             {

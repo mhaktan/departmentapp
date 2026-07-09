@@ -20,7 +20,7 @@ namespace DepartmentApp.Entities
         [MaxLength(10)]
         public string Currency { get; set; }
 
-        public SalaryType SalaryType { get; set; }
+        public SalaryRecordSalaryType SalaryType { get; set; }
 
         [MaxLength(500)]
         public string Notes { get; set; }

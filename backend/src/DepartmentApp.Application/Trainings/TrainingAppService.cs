@@ -55,8 +55,8 @@ namespace DepartmentApp.Trainings
                 .WhereIf(!input.Currency.IsNullOrWhiteSpace(), x => x.Currency != null && x.Currency.Contains(input.Currency))
                 .WhereIf(input.StartDate.HasValue, x => x.StartDate == input.StartDate.Value)
                 .WhereIf(input.EndDate.HasValue, x => x.EndDate == input.EndDate.Value)
-                .WhereIf(input.TrainingType.HasValue, x => x.TrainingType == (TrainingType)input.TrainingType.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.TrainingType.HasValue, x => x.TrainingType == (TrainingTrainingType)input.TrainingType.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (TrainingStatus)input.Status.Value)
                 .WhereIf(input.Cost.HasValue, x => x.Cost == input.Cost.Value)
                 .WhereIf(input.TrainingPlanId.HasValue, x => x.TrainingPlanId == input.TrainingPlanId.Value);
         }
@@ -69,7 +69,7 @@ namespace DepartmentApp.Trainings
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Planned)
+            if (result.Status != (int)TrainingStatus.Planned)
                 await _flowEngine.TriggerAsync("on-field-change", "Training", result);
             return result;
         }
@@ -82,8 +82,8 @@ namespace DepartmentApp.Trainings
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((TrainingStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (TrainingStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -139,7 +139,7 @@ namespace DepartmentApp.Trainings
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (TrainingStatus)Enum.Parse(typeof(TrainingStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -180,7 +180,7 @@ namespace DepartmentApp.Trainings
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(TrainingStatus from, TrainingStatus to)
         {
             var allowed = new (string From, string To)[]
             {

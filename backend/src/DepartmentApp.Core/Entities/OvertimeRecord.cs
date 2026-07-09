@@ -19,7 +19,7 @@ namespace DepartmentApp.Entities
         [MaxLength(500)]
         public string Reason { get; set; }
 
-        public Status Status { get; set; }
+        public OvertimeRecordStatus Status { get; set; }
 
         [MaxLength(500)]
         public string ApproverNote { get; set; }

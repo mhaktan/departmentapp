@@ -50,7 +50,7 @@ namespace DepartmentApp.TrainingPlans
                 .WhereIf(!input.Title.IsNullOrWhiteSpace(), x => x.Title != null && x.Title.Contains(input.Title))
                 .WhereIf(!input.Description.IsNullOrWhiteSpace(), x => x.Description != null && x.Description.Contains(input.Description))
                 .WhereIf(input.Year.HasValue, x => x.Year == input.Year.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (TrainingPlanStatus)input.Status.Value)
                 .WhereIf(input.DepartmentId.HasValue, x => x.DepartmentId == input.DepartmentId.Value);
         }
 
@@ -62,7 +62,7 @@ namespace DepartmentApp.TrainingPlans
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Draft)
+            if (result.Status != (int)TrainingPlanStatus.Draft)
                 await _flowEngine.TriggerAsync("on-field-change", "TrainingPlan", result);
             return result;
         }
@@ -75,8 +75,8 @@ namespace DepartmentApp.TrainingPlans
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((TrainingPlanStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (TrainingPlanStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -132,7 +132,7 @@ namespace DepartmentApp.TrainingPlans
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (TrainingPlanStatus)Enum.Parse(typeof(TrainingPlanStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -173,7 +173,7 @@ namespace DepartmentApp.TrainingPlans
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(TrainingPlanStatus from, TrainingPlanStatus to)
         {
             var allowed = new (string From, string To)[]
             {

@@ -26,9 +26,9 @@ namespace DepartmentApp.Entities
         [MaxLength(300)]
         public string Location { get; set; }
 
-        public TrainingType TrainingType { get; set; }
+        public TrainingTrainingType TrainingType { get; set; }
 
-        public Status Status { get; set; }
+        public TrainingStatus Status { get; set; }
 
         public decimal? Cost { get; set; }
 

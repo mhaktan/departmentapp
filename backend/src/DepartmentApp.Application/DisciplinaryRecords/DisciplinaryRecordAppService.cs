@@ -56,9 +56,9 @@ namespace DepartmentApp.DisciplinaryRecords
                 .WhereIf(!input.AppealNote.IsNullOrWhiteSpace(), x => x.AppealNote != null && x.AppealNote.Contains(input.AppealNote))
                 .WhereIf(!input.ResolutionNote.IsNullOrWhiteSpace(), x => x.ResolutionNote != null && x.ResolutionNote.Contains(input.ResolutionNote))
                 .WhereIf(input.IncidentDate.HasValue, x => x.IncidentDate == input.IncidentDate.Value)
-                .WhereIf(input.Type.HasValue, x => x.Type == (Type)input.Type.Value)
+                .WhereIf(input.Type.HasValue, x => x.Type == (DisciplinaryRecordType)input.Type.Value)
                 .WhereIf(input.AcknowledgedByEmployee.HasValue, x => x.AcknowledgedByEmployee == input.AcknowledgedByEmployee.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (DisciplinaryRecordStatus)input.Status.Value)
                 .WhereIf(input.HrReviewerId.HasValue, x => x.HrReviewerId == input.HrReviewerId.Value)
                 .WhereIf(input.HrManagerResolverId.HasValue, x => x.HrManagerResolverId == input.HrManagerResolverId.Value)
                 .WhereIf(input.EmployeeId.HasValue, x => x.EmployeeId == input.EmployeeId.Value);
@@ -72,7 +72,7 @@ namespace DepartmentApp.DisciplinaryRecords
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Open)
+            if (result.Status != (int)DisciplinaryRecordStatus.Open)
                 await _flowEngine.TriggerAsync("on-field-change", "DisciplinaryRecord", result);
             return result;
         }
@@ -85,8 +85,8 @@ namespace DepartmentApp.DisciplinaryRecords
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((DisciplinaryRecordStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (DisciplinaryRecordStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -148,7 +148,7 @@ namespace DepartmentApp.DisciplinaryRecords
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (DisciplinaryRecordStatus)Enum.Parse(typeof(DisciplinaryRecordStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -189,7 +189,7 @@ namespace DepartmentApp.DisciplinaryRecords
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(DisciplinaryRecordStatus from, DisciplinaryRecordStatus to)
         {
             var allowed = new (string From, string To)[]
             {

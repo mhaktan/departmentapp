@@ -52,10 +52,10 @@ namespace DepartmentApp.JobPostings
                 .WhereIf(!input.Description.IsNullOrWhiteSpace(), x => x.Description != null && x.Description.Contains(input.Description))
                 .WhereIf(!input.Requirements.IsNullOrWhiteSpace(), x => x.Requirements != null && x.Requirements.Contains(input.Requirements))
                 .WhereIf(input.PositionCount.HasValue, x => x.PositionCount == input.PositionCount.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (JobPostingStatus)input.Status.Value)
                 .WhereIf(input.PublishDate.HasValue, x => x.PublishDate == input.PublishDate.Value)
                 .WhereIf(input.ClosingDate.HasValue, x => x.ClosingDate == input.ClosingDate.Value)
-                .WhereIf(input.EmploymentType.HasValue, x => x.EmploymentType == (EmploymentType)input.EmploymentType.Value)
+                .WhereIf(input.EmploymentType.HasValue, x => x.EmploymentType == (JobPostingEmploymentType)input.EmploymentType.Value)
                 .WhereIf(input.DepartmentId.HasValue, x => x.DepartmentId == input.DepartmentId.Value);
         }
 
@@ -67,7 +67,7 @@ namespace DepartmentApp.JobPostings
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Draft)
+            if (result.Status != (int)JobPostingStatus.Draft)
                 await _flowEngine.TriggerAsync("on-field-change", "JobPosting", result);
             return result;
         }
@@ -80,8 +80,8 @@ namespace DepartmentApp.JobPostings
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((JobPostingStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (JobPostingStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -137,7 +137,7 @@ namespace DepartmentApp.JobPostings
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (JobPostingStatus)Enum.Parse(typeof(JobPostingStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -178,7 +178,7 @@ namespace DepartmentApp.JobPostings
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(JobPostingStatus from, JobPostingStatus to)
         {
             var allowed = new (string From, string To)[]
             {

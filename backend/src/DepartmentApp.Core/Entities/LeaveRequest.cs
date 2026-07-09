@@ -21,7 +21,7 @@ namespace DepartmentApp.Entities
         [MaxLength(1000)]
         public string Reason { get; set; }
 
-        public Status Status { get; set; }
+        public LeaveRequestStatus Status { get; set; }
 
         [MaxLength(1000)]
         public string RevisionNote { get; set; }

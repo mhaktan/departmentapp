@@ -52,7 +52,7 @@ namespace DepartmentApp.LeaveRequests
                 .WhereIf(input.StartDate.HasValue, x => x.StartDate == input.StartDate.Value)
                 .WhereIf(input.EndDate.HasValue, x => x.EndDate == input.EndDate.Value)
                 .WhereIf(input.TotalDays.HasValue, x => x.TotalDays == input.TotalDays.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (LeaveRequestStatus)input.Status.Value)
                 .WhereIf(input.RequiresHRApproval.HasValue, x => x.RequiresHRApproval == input.RequiresHRApproval.Value)
                 .WhereIf(input.ManagerApproverId.HasValue, x => x.ManagerApproverId == input.ManagerApproverId.Value)
                 .WhereIf(input.HrApproverId.HasValue, x => x.HrApproverId == input.HrApproverId.Value)
@@ -69,7 +69,7 @@ namespace DepartmentApp.LeaveRequests
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Draft)
+            if (result.Status != (int)LeaveRequestStatus.Draft)
                 await _flowEngine.TriggerAsync("on-field-change", "LeaveRequest", result);
             return result;
         }
@@ -82,8 +82,8 @@ namespace DepartmentApp.LeaveRequests
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((LeaveRequestStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (LeaveRequestStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -146,7 +146,7 @@ namespace DepartmentApp.LeaveRequests
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (LeaveRequestStatus)Enum.Parse(typeof(LeaveRequestStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -190,7 +190,7 @@ namespace DepartmentApp.LeaveRequests
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(LeaveRequestStatus from, LeaveRequestStatus to)
         {
             var allowed = new (string From, string To)[]
             {

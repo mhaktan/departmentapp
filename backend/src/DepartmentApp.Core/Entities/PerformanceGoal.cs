@@ -25,7 +25,7 @@ namespace DepartmentApp.Entities
 
         public decimal? ManagerScore { get; set; }
 
-        public Status Status { get; set; }
+        public PerformanceGoalStatus Status { get; set; }
 
         public long PerformanceReviewId { get; set; }
 

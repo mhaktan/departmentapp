@@ -49,7 +49,7 @@ namespace DepartmentApp.PerformanceGoals
                 .WhereIf(input.Weight.HasValue, x => x.Weight == input.Weight.Value)
                 .WhereIf(input.SelfScore.HasValue, x => x.SelfScore == input.SelfScore.Value)
                 .WhereIf(input.ManagerScore.HasValue, x => x.ManagerScore == input.ManagerScore.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (PerformanceGoalStatus)input.Status.Value)
                 .WhereIf(input.PerformanceReviewId.HasValue, x => x.PerformanceReviewId == input.PerformanceReviewId.Value);
         }
 

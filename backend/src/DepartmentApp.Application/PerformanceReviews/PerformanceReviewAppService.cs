@@ -56,8 +56,8 @@ namespace DepartmentApp.PerformanceReviews
                 .WhereIf(!input.HrNotes.IsNullOrWhiteSpace(), x => x.HrNotes != null && x.HrNotes.Contains(input.HrNotes))
                 .WhereIf(!input.RevisionNote.IsNullOrWhiteSpace(), x => x.RevisionNote != null && x.RevisionNote.Contains(input.RevisionNote))
                 .WhereIf(input.ReviewYear.HasValue, x => x.ReviewYear == input.ReviewYear.Value)
-                .WhereIf(input.ReviewType.HasValue, x => x.ReviewType == (ReviewType)input.ReviewType.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (Status)input.Status.Value)
+                .WhereIf(input.ReviewType.HasValue, x => x.ReviewType == (PerformanceReviewReviewType)input.ReviewType.Value)
+                .WhereIf(input.Status.HasValue, x => x.Status == (PerformanceReviewStatus)input.Status.Value)
                 .WhereIf(input.SelfAssessmentScore.HasValue, x => x.SelfAssessmentScore == input.SelfAssessmentScore.Value)
                 .WhereIf(input.ManagerScore.HasValue, x => x.ManagerScore == input.ManagerScore.Value)
                 .WhereIf(input.OverallScore.HasValue, x => x.OverallScore == input.OverallScore.Value)
@@ -75,7 +75,7 @@ namespace DepartmentApp.PerformanceReviews
             // Frontend creates records with status pre-set without going through ChangeStatusAsync,
             // so mirror on-field-change here whenever the initial status isn't the default. Otherwise
             // status-driven flows (e.g. approval) never fire on plain Create.
-            if (result.Status != (int)Status.Draft)
+            if (result.Status != (int)PerformanceReviewStatus.Draft)
                 await _flowEngine.TriggerAsync("on-field-change", "PerformanceReview", result);
             return result;
         }
@@ -88,8 +88,8 @@ namespace DepartmentApp.PerformanceReviews
             if (statusChanged)
             {
                 var fromStatus = existing.Status.ToString();
-                var toStatus = ((Status)input.Status).ToString();
-                ValidateStatusTransition(existing.Status, (Status)input.Status);
+                var toStatus = ((PerformanceReviewStatus)input.Status).ToString();
+                ValidateStatusTransition(existing.Status, (PerformanceReviewStatus)input.Status);
 
                 // Log status change
                 await _statusChangeLogRepo.InsertAsync(new StatusChangeLog
@@ -150,7 +150,7 @@ namespace DepartmentApp.PerformanceReviews
             var fromStatus = currentStatus;
 
             // Apply new status
-            entity.Status = (Status)Enum.Parse(typeof(Status), transition.To);
+            entity.Status = (PerformanceReviewStatus)Enum.Parse(typeof(PerformanceReviewStatus), transition.To);
             await Repository.UpdateAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -194,7 +194,7 @@ namespace DepartmentApp.PerformanceReviews
             return result;
         }
 
-        private void ValidateStatusTransition(Status from, Status to)
+        private void ValidateStatusTransition(PerformanceReviewStatus from, PerformanceReviewStatus to)
         {
             var allowed = new (string From, string To)[]
             {

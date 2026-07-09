@@ -21,7 +21,7 @@ namespace DepartmentApp.Entities
 
         public int Year { get; set; }
 
-        public Status Status { get; set; }
+        public TrainingPlanStatus Status { get; set; }
 
         public long DepartmentId { get; set; }
 
