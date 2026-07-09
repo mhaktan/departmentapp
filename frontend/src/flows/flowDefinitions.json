@@ -1,0 +1,745 @@
+[
+  {
+    "id": "flow-DisciplinaryRecord-approval",
+    "name": "DisciplinaryRecord Approval Flow",
+    "edges": [
+      {
+        "id": "gen_1783632393267_3",
+        "sourceNodeId": "gen_1783632393267_1",
+        "targetNodeId": "gen_1783632393267_2"
+      },
+      {
+        "id": "gen_1783632393267_5",
+        "branch": "true",
+        "sourceNodeId": "gen_1783632393267_2",
+        "targetNodeId": "gen_1783632393267_4"
+      },
+      {
+        "id": "gen_1783632393267_7",
+        "sourceNodeId": "gen_1783632393267_4",
+        "targetNodeId": "gen_1783632393267_6"
+      },
+      {
+        "id": "gen_1783632393267_10",
+        "sourceNodeId": "gen_1783632393267_8",
+        "targetNodeId": "gen_1783632393267_9"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "gen_1783632393267_1",
+        "type": "trigger",
+        "label": "On DisciplinaryRecord Submit",
+        "trigger": {
+          "type": "on-field-change",
+          "fieldName": "status",
+          "resourceName": "DisciplinaryRecord"
+        },
+        "position": {
+          "x": 300,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_2",
+        "type": "condition",
+        "label": "Status = UnderReview?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "value": "1",
+              "operator": "equals"
+            }
+          ]
+        }
+      },
+      {
+        "id": "gen_1783632393267_4",
+        "type": "approval",
+        "label": "DisciplinaryRecord Approval",
+        "approval": {
+          "steps": [
+            {
+              "name": "İK Müdürü İtiraz İncelemesi",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Kapat"
+                },
+                {
+                  "type": "revise",
+                  "label": "Yeniden İncele",
+                  "requiredFields": [
+                    "resolutionNote"
+                  ]
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "HRManager"
+            }
+          ],
+          "onCompleteEvent": "DisciplinaryRecord-approval-completed",
+          "revisionAssignee": "previous-step",
+          "trackRevisionHistory": true
+        },
+        "position": {
+          "x": 300,
+          "y": 280
+        }
+      },
+      {
+        "id": "gen_1783632393267_6",
+        "type": "action",
+        "label": "Send Approval Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "body": "<p>Sayın İK Müdürü,</p><p>Bir disiplin kaydına itiraz edilmiştir. Lütfen sisteme giriş yaparak inceleyiniz.</p>",
+            "subject": "Disiplin Kaydı İtirazı — İncelemenizi Bekliyor",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 300,
+          "y": 400
+        }
+      },
+      {
+        "id": "gen_1783632393267_8",
+        "type": "trigger",
+        "label": "On DisciplinaryRecord Approved",
+        "trigger": {
+          "type": "manual",
+          "resourceName": "DisciplinaryRecord"
+        },
+        "position": {
+          "x": 700,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_9",
+        "type": "action",
+        "label": "Send Completion Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "cc": "{{departmentEmails}}",
+            "to": "{{creatorEmail}}",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 700,
+          "y": 160
+        }
+      }
+    ],
+    "enabled": true,
+    "createdAt": "2026-07-09T21:26:33.267Z",
+    "updatedAt": "2026-07-09T21:26:33.267Z",
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "description": "Auto-generated approval flow for DisciplinaryRecord. Customize email templates and add conditions as needed.",
+    "resourceName": "DisciplinaryRecord"
+  },
+  {
+    "id": "flow-OvertimeRecord-approval",
+    "name": "OvertimeRecord Approval Flow",
+    "edges": [
+      {
+        "id": "gen_1783632393267_13",
+        "sourceNodeId": "gen_1783632393267_11",
+        "targetNodeId": "gen_1783632393267_12"
+      },
+      {
+        "id": "gen_1783632393267_15",
+        "branch": "true",
+        "sourceNodeId": "gen_1783632393267_12",
+        "targetNodeId": "gen_1783632393267_14"
+      },
+      {
+        "id": "gen_1783632393267_17",
+        "sourceNodeId": "gen_1783632393267_14",
+        "targetNodeId": "gen_1783632393267_16"
+      },
+      {
+        "id": "gen_1783632393267_20",
+        "sourceNodeId": "gen_1783632393267_18",
+        "targetNodeId": "gen_1783632393267_19"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "gen_1783632393267_11",
+        "type": "trigger",
+        "label": "On OvertimeRecord Submit",
+        "trigger": {
+          "type": "on-field-change",
+          "fieldName": "status",
+          "resourceName": "OvertimeRecord"
+        },
+        "position": {
+          "x": 300,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_12",
+        "type": "condition",
+        "label": "Status = Approved?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "value": "1",
+              "operator": "equals"
+            }
+          ]
+        }
+      },
+      {
+        "id": "gen_1783632393267_14",
+        "type": "approval",
+        "label": "OvertimeRecord Approval",
+        "approval": {
+          "steps": [
+            {
+              "name": "Müdür Onayı",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Onayla"
+                },
+                {
+                  "type": "revise",
+                  "label": "Reddet",
+                  "requiredFields": [
+                    "approverNote"
+                  ]
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "DepartmentManager"
+            }
+          ],
+          "onCompleteEvent": "OvertimeRecord-approval-completed",
+          "revisionAssignee": "creator",
+          "trackRevisionHistory": true
+        },
+        "position": {
+          "x": 300,
+          "y": 280
+        }
+      },
+      {
+        "id": "gen_1783632393267_16",
+        "type": "action",
+        "label": "Send Approval Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "body": "<p>Sayın yönetici,</p><p>Bir fazla mesai kaydı onayınızı beklemektedir. Lütfen sisteme giriş yaparak inceleyiniz.</p>",
+            "subject": "Fazla Mesai Talebi — Onayınızı Bekliyor",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 300,
+          "y": 400
+        }
+      },
+      {
+        "id": "gen_1783632393267_18",
+        "type": "trigger",
+        "label": "On OvertimeRecord Approved",
+        "trigger": {
+          "type": "manual",
+          "resourceName": "OvertimeRecord"
+        },
+        "position": {
+          "x": 700,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_19",
+        "type": "action",
+        "label": "Send Completion Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "cc": "{{departmentEmails}}",
+            "to": "{{creatorEmail}}",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 700,
+          "y": 160
+        }
+      }
+    ],
+    "enabled": true,
+    "createdAt": "2026-07-09T21:26:33.267Z",
+    "updatedAt": "2026-07-09T21:26:33.267Z",
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "description": "Auto-generated approval flow for OvertimeRecord. Customize email templates and add conditions as needed.",
+    "resourceName": "OvertimeRecord"
+  },
+  {
+    "id": "flow-LeaveRequest-approval",
+    "name": "LeaveRequest Approval Flow",
+    "edges": [
+      {
+        "id": "gen_1783632393267_23",
+        "sourceNodeId": "gen_1783632393267_21",
+        "targetNodeId": "gen_1783632393267_22"
+      },
+      {
+        "id": "gen_1783632393267_25",
+        "branch": "true",
+        "sourceNodeId": "gen_1783632393267_22",
+        "targetNodeId": "gen_1783632393267_24"
+      },
+      {
+        "id": "gen_1783632393267_27",
+        "sourceNodeId": "gen_1783632393267_24",
+        "targetNodeId": "gen_1783632393267_26"
+      },
+      {
+        "id": "gen_1783632393267_30",
+        "sourceNodeId": "gen_1783632393267_28",
+        "targetNodeId": "gen_1783632393267_29"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "gen_1783632393267_21",
+        "type": "trigger",
+        "label": "On LeaveRequest Submit",
+        "trigger": {
+          "type": "on-field-change",
+          "fieldName": "status",
+          "resourceName": "LeaveRequest"
+        },
+        "position": {
+          "x": 300,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_22",
+        "type": "condition",
+        "label": "Status = PendingManagerApproval?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "value": "1",
+              "operator": "equals"
+            }
+          ]
+        }
+      },
+      {
+        "id": "gen_1783632393267_24",
+        "type": "approval",
+        "label": "LeaveRequest Approval",
+        "approval": {
+          "steps": [
+            {
+              "name": "Müdür Onayı",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Onayla"
+                },
+                {
+                  "type": "revise",
+                  "label": "Revize Et",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "DepartmentManager"
+            },
+            {
+              "name": "İK Onayı",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Onayla"
+                },
+                {
+                  "type": "revise",
+                  "label": "Revize Et",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "HRSpecialist"
+            }
+          ],
+          "onCompleteEvent": "LeaveRequest-approval-completed",
+          "revisionAssignee": "creator",
+          "trackRevisionHistory": true
+        },
+        "position": {
+          "x": 300,
+          "y": 280
+        }
+      },
+      {
+        "id": "gen_1783632393267_26",
+        "type": "action",
+        "label": "Send Approval Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "body": "<p>Sayın onaylayıcı,</p><p>Bir izin talebi onayınızı beklemektedir. Lütfen sisteme giriş yaparak inceleyiniz.</p>",
+            "subject": "İzin Talebi — Onayınızı Bekliyor",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 300,
+          "y": 400
+        }
+      },
+      {
+        "id": "gen_1783632393267_28",
+        "type": "trigger",
+        "label": "On LeaveRequest Approved",
+        "trigger": {
+          "type": "manual",
+          "resourceName": "LeaveRequest"
+        },
+        "position": {
+          "x": 700,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_29",
+        "type": "action",
+        "label": "Send Completion Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "cc": "{{departmentEmails}}",
+            "to": "{{creatorEmail}}",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 700,
+          "y": 160
+        }
+      }
+    ],
+    "enabled": true,
+    "createdAt": "2026-07-09T21:26:33.267Z",
+    "updatedAt": "2026-07-09T21:26:33.267Z",
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "description": "Auto-generated approval flow for LeaveRequest. Customize email templates and add conditions as needed.",
+    "resourceName": "LeaveRequest"
+  },
+  {
+    "id": "flow-PerformanceReview-approval",
+    "name": "PerformanceReview Approval Flow",
+    "edges": [
+      {
+        "id": "gen_1783632393267_33",
+        "sourceNodeId": "gen_1783632393267_31",
+        "targetNodeId": "gen_1783632393267_32"
+      },
+      {
+        "id": "gen_1783632393267_35",
+        "branch": "true",
+        "sourceNodeId": "gen_1783632393267_32",
+        "targetNodeId": "gen_1783632393267_34"
+      },
+      {
+        "id": "gen_1783632393267_37",
+        "sourceNodeId": "gen_1783632393267_34",
+        "targetNodeId": "gen_1783632393267_36"
+      },
+      {
+        "id": "gen_1783632393267_40",
+        "sourceNodeId": "gen_1783632393267_38",
+        "targetNodeId": "gen_1783632393267_39"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "gen_1783632393267_31",
+        "type": "trigger",
+        "label": "On PerformanceReview Submit",
+        "trigger": {
+          "type": "on-field-change",
+          "fieldName": "status",
+          "resourceName": "PerformanceReview"
+        },
+        "position": {
+          "x": 300,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_32",
+        "type": "condition",
+        "label": "Status = SelfAssessmentPending?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "value": "1",
+              "operator": "equals"
+            }
+          ]
+        }
+      },
+      {
+        "id": "gen_1783632393267_34",
+        "type": "approval",
+        "label": "PerformanceReview Approval",
+        "approval": {
+          "steps": [
+            {
+              "name": "Çalışan Öz Değerlendirme",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Gönder"
+                }
+              ],
+              "assigneeType": "field",
+              "assigneeValue": "managerReviewerId"
+            },
+            {
+              "name": "Yönetici Değerlendirmesi",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Onayla"
+                },
+                {
+                  "type": "revise",
+                  "label": "Revize Et",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "DepartmentManager"
+            },
+            {
+              "name": "360 Derece Peer Değerlendirme",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Değerlendirmeyi Tamamla"
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "Employee"
+            },
+            {
+              "name": "İK Nihai Onayı",
+              "actions": [
+                {
+                  "type": "approve",
+                  "label": "Tamamla"
+                }
+              ],
+              "assigneeType": "role",
+              "assigneeValue": "HRSpecialist"
+            }
+          ],
+          "onCompleteEvent": "PerformanceReview-approval-completed",
+          "revisionAssignee": "creator",
+          "trackRevisionHistory": true
+        },
+        "position": {
+          "x": 300,
+          "y": 280
+        }
+      },
+      {
+        "id": "gen_1783632393267_36",
+        "type": "action",
+        "label": "Send Approval Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "body": "<p>Sayın değerlendirici,</p><p>Bir performans değerlendirmesi incelemenizi beklemektedir. Lütfen sisteme giriş yaparak değerlendirmenizi yapınız.</p>",
+            "subject": "Performans Değerlendirmesi — Onayınızı Bekliyor",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 300,
+          "y": 400
+        }
+      },
+      {
+        "id": "gen_1783632393267_38",
+        "type": "trigger",
+        "label": "On PerformanceReview Approved",
+        "trigger": {
+          "type": "manual",
+          "resourceName": "PerformanceReview"
+        },
+        "position": {
+          "x": 700,
+          "y": 50
+        }
+      },
+      {
+        "id": "gen_1783632393267_39",
+        "type": "action",
+        "label": "Send Completion Email",
+        "action": {
+          "type": "send-email",
+          "config": {
+            "cc": "{{departmentEmails}}",
+            "to": "{{creatorEmail}}",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "contentType": "html"
+          }
+        },
+        "position": {
+          "x": 700,
+          "y": 160
+        }
+      }
+    ],
+    "enabled": true,
+    "createdAt": "2026-07-09T21:26:33.267Z",
+    "updatedAt": "2026-07-09T21:26:33.267Z",
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "description": "Auto-generated approval flow for PerformanceReview. Customize email templates and add conditions as needed.",
+    "resourceName": "PerformanceReview"
+  }
+]
