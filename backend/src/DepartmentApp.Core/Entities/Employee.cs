@@ -89,7 +89,7 @@ namespace DepartmentApp.Entities
         public long EmployeeId { get; set; }
 
         [ForeignKey(nameof(EmployeeId))]
-        public virtual Employee Employee { get; set; }
+        public virtual Employee ParentEmployee { get; set; }
 
         public long OnboardingId { get; set; }
 

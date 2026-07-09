@@ -66,7 +66,7 @@ namespace DepartmentApp.EntityFrameworkCore
 
             // Employee 1:N Employee
             modelBuilder.Entity<Employee>()
-                .HasOne(x => x.Employee)
+                .HasOne(x => x.ParentEmployee)
                 .WithMany(x => x.Employees)
                 .HasForeignKey(x => x.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
