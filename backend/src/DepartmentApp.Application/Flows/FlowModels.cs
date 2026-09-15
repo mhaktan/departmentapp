@@ -32,7 +32,6 @@ namespace DepartmentApp.Flows
     public class FlowApproval
     {
         public List<FlowApprovalStep> Steps { get; set; } = new();
-        public string RevisionAssignee { get; set; } // "creator" or "previous-step"
         public bool TrackRevisionHistory { get; set; }
         public string EmailSubjectTemplate { get; set; }
         public string EmailBodyTemplate { get; set; }

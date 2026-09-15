@@ -19,7 +19,12 @@ export const useDeleteMutation = (resource: string, onAfterDelete?: (ids: (strin
       setDeleteTarget(null);
       if (onAfterDelete) onAfterDelete(ids);
     },
-    onError: () => setDeleteTarget(null),
+    // Yetki/kilit hatalari sessizce yutulmamali — create/edit ile ayni toast kanali.
+    // (Ornek: 403 "Required permissions are not granted: X.Delete")
+    onError: (err: Error) => {
+      window.dispatchEvent(new CustomEvent('app-toast', { detail: { type: 'error', message: err.message } }));
+      setDeleteTarget(null);
+    },
   });
 
   const confirmDelete = () => {

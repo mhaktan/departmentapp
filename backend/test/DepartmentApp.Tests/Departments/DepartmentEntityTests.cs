@@ -25,7 +25,14 @@ namespace DepartmentApp.Tests.Departments
 
             // Assert
             entity.Id.Should().Be(default(long));
+            entity.IsActive.Should().Be(false);
+        }
 
+        [Fact]
+        public void Department_Code_ShouldAcceptValue()
+        {
+            var entity = new Department { Code = "Test Value" };
+            entity.Code.Should().Be("Test Value");
         }
 
         [Fact]

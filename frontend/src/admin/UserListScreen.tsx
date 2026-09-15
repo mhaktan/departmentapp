@@ -1,6 +1,7 @@
 import React from 'react';
-import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable, TkDialog } from '@takeoff-ui/react';
+import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable } from '@takeoff-ui/react';
 import { actionColumn, registerCrudHandler } from '../shared/ActionButtons';
+import { DeleteConfirmDialog } from '../shared/DeleteConfirmDialog';
 import { userApi, roleApi, type AppUserDto, type AppRoleDto } from './rbacApi';
 
 const BASE_COLUMNS = [
@@ -33,7 +34,7 @@ export default function UserListScreen() {
 
   React.useEffect(() => { load(); }, [load]);
 
-  // Row-level edit/delete via global crud handler (TkTable HTML buttons trigger window.__crud_action__)
+  // Row-level edit/delete via global crud handler (html column buttons trigger window.__crud_action__)
   React.useEffect(() => {
     return registerCrudHandler((action, id) => {
       const u = users.find(x => String(x.id) === id);
@@ -70,12 +71,7 @@ export default function UserListScreen() {
       {error && <div style={{ padding: 12, background: '#fdecea', color: '#d32f2f', borderRadius: 4, marginBottom: 12 }}>{error}</div>}
 
       <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 6, overflow: 'hidden' }}>
-        <TkTable
-          data={rows}
-          columns={columns}
-          dataKey="id"
-          loading={loading}
-        />
+        <TkTable data={rows} columns={columns as any} dataKey="id" loading={loading} />
         {users.length === 0 && !loading && (
           <div style={{ padding: 24, textAlign: 'center', color: '#999' }}>No users yet.</div>
         )}
@@ -84,20 +80,18 @@ export default function UserListScreen() {
       <UserCreateModal open={showCreate} onClose={() => setShowCreate(false)} onSuccess={load} allRoles={allRoles} />
       <UserEditModal user={editUser} onClose={() => setEditUser(null)} onSuccess={load} allRoles={allRoles} />
 
-      <TkDialog visible={!!confirmDelete} header="Delete user" onTkClose={() => setConfirmDelete(null)}>
-        <div slot="content" style={{ padding: 16, fontSize: 14 }}>
-          Are you sure you want to delete "<strong>{confirmDelete?.userName}</strong>"? This action cannot be undone.
-        </div>
-        <div slot="footer" style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', padding: '12px 16px' }}>
-          <TkButton label="Cancel" variant="neutral" onTkClick={() => setConfirmDelete(null)} />
-          <TkButton label="Delete" variant="danger" onTkClick={() => {
-            if (!confirmDelete) return;
-            const u = confirmDelete;
-            userApi.delete(u.id).then(load).catch(e => alert(e.message));
-            setConfirmDelete(null);
-          }} />
-        </div>
-      </TkDialog>
+      <DeleteConfirmDialog
+        visible={!!confirmDelete}
+        label={confirmDelete?.userName ?? ''}
+        isPending={false}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={() => {
+          if (!confirmDelete) return;
+          const u = confirmDelete;
+          userApi.delete(u.id).then(load).catch(e => alert(e.message));
+          setConfirmDelete(null);
+        }}
+      />
     </div>
   );
 }

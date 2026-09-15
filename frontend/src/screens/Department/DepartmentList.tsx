@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { TkButton } from '@takeoff-ui/react';
+import { dataProvider } from '../../dataProvider';
 import { useListQuery } from '../../shared/useListQuery';
 import { useDeleteMutation } from '../../shared/useDeleteMutation';
 import { DeleteConfirmDialog } from '../../shared/DeleteConfirmDialog';
@@ -16,10 +18,10 @@ import { useFlows } from '../../flows/FlowProvider';
 
 type DepartmentRecord = {
   id: string | number;
+  code: string;
   name: string;
-  code?: string;
-  description?: string;
-  branchId: string;
+  annualBudget?: number;
+  isActive: boolean;
   [key: string]: unknown;
 };
 
@@ -45,10 +47,10 @@ type DepartmentRecord = {
 
 const COLUMNS: TableColumn[] = [
   { field: 'id', header: 'ID', sortable: true },
-  { field: 'name', header: 'Name', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'code', header: 'Code', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'description', header: 'Description', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'branchId', header: 'Şube', sortable: true },
+  { field: 'code', header: "Code", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'name', header: "Name", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'annualBudget', header: "Annual Budget", sortable: true },
+  { field: 'isActive', header: "Is Active", sortable: true, filterType: 'checkbox', filterOptions: [{ label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }], html: (row: Record<string, unknown>) => row.isActive ? '<span style="color:#2e7d32;font-weight:600">Yes</span>' : '<span style="color:#999">No</span>' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -60,6 +62,24 @@ export const DepartmentList: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editRecord, setEditRecord] = useState<DepartmentRecord | null>(null);
   const [selectedRows, setSelectedRows] = useState<DepartmentRecord[]>([]);
+
+  // ?focus=<id> ile gelindiginde kayit dogrudan acilir (My Tasks -> kayit)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const focusId = searchParams.get('focus');
+  const focusedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!focusId || focusedRef.current === focusId) return;
+    focusedRef.current = focusId;
+    const clear = () => {
+      const next = new URLSearchParams(searchParams);
+      next.delete('focus');
+      setSearchParams(next, { replace: true });
+    };
+    Promise.resolve(dataProvider.getOne('Department', focusId))
+      .then((rec) => { if (rec) setEditRecord(rec as DepartmentRecord); })
+      .catch(() => { /* kayit bulunamadi — liste normal acilir */ })
+      .finally(clear);
+  }, [focusId]);
   const { triggerFlows } = useFlows();
   const del = useDeleteMutation('Department', (ids) => { ids.forEach(id => triggerFlows('delete', 'Department', { id })); });
 

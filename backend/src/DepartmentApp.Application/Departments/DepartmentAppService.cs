@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
@@ -8,6 +10,10 @@ using Abp.Extensions;
 using Abp.Linq.Extensions;
 using DepartmentApp.Entities;
 using DepartmentApp.Departments.Dto;
+using DepartmentApp.Analytics.Dto;
+using DepartmentApp.Employees.Dto;
+using DepartmentApp.PurchaseRequests.Dto;
+using DepartmentApp.Approvals.Dto;
 using DepartmentApp.Authorization;
 using DepartmentApp.Flows;
 
@@ -41,13 +47,14 @@ namespace DepartmentApp.Departments
             return Repository.GetAll()
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x =>
                     x.Id.ToString().Contains(input.Keyword) ||
-                    (x.Name != null && x.Name.Contains(input.Keyword)) ||
                     (x.Code != null && x.Code.Contains(input.Keyword)) ||
-                    (x.Description != null && x.Description.Contains(input.Keyword)))
-                .WhereIf(!input.Name.IsNullOrWhiteSpace(), x => x.Name != null && x.Name.Contains(input.Name))
+                    (x.Name != null && x.Name.Contains(input.Keyword)))
                 .WhereIf(!input.Code.IsNullOrWhiteSpace(), x => x.Code != null && x.Code.Contains(input.Code))
-                .WhereIf(!input.Description.IsNullOrWhiteSpace(), x => x.Description != null && x.Description.Contains(input.Description))
-                .WhereIf(input.BranchId.HasValue, x => x.BranchId == input.BranchId.Value);
+                .WhereIf(!input.Name.IsNullOrWhiteSpace(), x => x.Name != null && x.Name.Contains(input.Name))
+                .WhereIf(input.AnnualBudget.HasValue, x => x.AnnualBudget == input.AnnualBudget.Value)
+                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive.Value)
+                .WhereIf(input.AnnualBudgetFrom.HasValue, x => x.AnnualBudget >= input.AnnualBudgetFrom.Value)
+                .WhereIf(input.AnnualBudgetTo.HasValue, x => x.AnnualBudget <= input.AnnualBudgetTo.Value);
         }
 
         public override async Task<DepartmentDto> CreateAsync(CreateDepartmentDto input)
@@ -69,5 +76,64 @@ namespace DepartmentApp.Departments
             await base.DeleteAsync(input);
             await _flowEngine.TriggerAsync("on-delete", "Department", new { Id = input.Id });
         }
+        [Abp.Authorization.AbpAuthorize(PermissionNames.Department_Read)]
+        public decimal? GetStats(DepartmentStatsInput input)
+        {
+            var query = CreateFilteredQuery(input);
+
+            if (input.Aggregate == "avgDayDiff")
+            {
+                var allowedDates = new string[0];
+                if (!allowedDates.Contains(input.FromField) || !allowedDates.Contains(input.ToField))
+                {
+                    throw new Abp.UI.UserFriendlyException("avgDayDiff icin gecerli iki tarih alani gerekli.");
+                }
+                switch (input.FromField + "|" + input.ToField)
+                {
+                    default: return null;
+                }
+            }
+
+            var allowedNumeric = new[] { "AnnualBudget" };
+            if (!allowedNumeric.Contains(input.Field))
+            {
+                throw new Abp.UI.UserFriendlyException(
+                    $"Toplanabilir alan degil: {input.Field}. Izin verilenler: {string.Join(", ", allowedNumeric)}");
+            }
+            switch (input.Field)
+            {
+                        case "AnnualBudget": return input.Aggregate == "sum" ? query.Sum(x => (decimal?)x.AnnualBudget)
+                            : input.Aggregate == "min" ? query.Min(x => (decimal?)x.AnnualBudget)
+                            : input.Aggregate == "max" ? query.Max(x => (decimal?)x.AnnualBudget)
+                            : query.Average(x => (decimal?)x.AnnualBudget);
+                        default: return null;
+            }
+        }
+
+        /// <summary>
+        /// Rapor verisi — kok kayit ve alt koleksiyonlar TEK yanitta.
+        /// PDF sablonu template basina tek apiBinding kullaniyor.
+        /// </summary>
+        [Abp.Authorization.AbpAuthorize(PermissionNames.Department_Read)]
+        public async Task<DepartmentReportDto> GetReportData(long id)
+        {
+            var root = await Repository.GetAll()
+                .Include(x => x.Employees)
+                .Include(x => x.PurchaseRequests)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (root == null)
+                throw new Abp.UI.UserFriendlyException($"Kayit bulunamadi: {id}");
+
+            return new DepartmentReportDto
+            {
+                Data = ObjectMapper.Map<DepartmentDto>(root),
+                Employees = ObjectMapper.Map<List<EmployeeDto>>(
+                    root.Employees == null ? new List<Employee>() : root.Employees.ToList()),
+                PurchaseRequests = ObjectMapper.Map<List<PurchaseRequestDto>>(
+                    root.PurchaseRequests == null ? new List<PurchaseRequest>() : root.PurchaseRequests.ToList()),
+            };
+        }
+
     }
 }

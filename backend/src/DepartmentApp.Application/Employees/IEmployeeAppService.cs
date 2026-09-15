@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using DepartmentApp.Analytics.Dto;
 using DepartmentApp.Employees.Dto;
 
 namespace DepartmentApp.Employees
@@ -14,5 +15,7 @@ namespace DepartmentApp.Employees
         CreateEmployeeDto,
         EmployeeDto>
     {
+        List<GroupCountDto> GetGroupedCount(EmployeeGroupedCountInput input);
+        Task<EmployeeReportDto> GetReportData(long id);
     }
 }

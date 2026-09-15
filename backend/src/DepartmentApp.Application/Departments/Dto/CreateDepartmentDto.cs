@@ -8,16 +8,16 @@ namespace DepartmentApp.Departments.Dto
     public class CreateDepartmentDto
     {
         [Required]
-        [MaxLength(200)]
-        public string Name { get; set; }
-
         [MaxLength(20)]
         public string Code { get; set; }
 
-        [MaxLength(1000)]
-        public string Description { get; set; }
+        [Required]
+        [MaxLength(200)]
+        public string Name { get; set; }
 
-        public long BranchId { get; set; }
+        public decimal? AnnualBudget { get; set; }
+
+        public bool IsActive { get; set; }
 
     }
 }

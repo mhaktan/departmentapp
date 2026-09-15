@@ -9,44 +9,27 @@ export interface TableColumn {
   sortable?: boolean;
   searchable?: boolean;
   filterType?: 'text' | 'checkbox' | 'radio' | 'datepicker';
-  filterOptions?: Array<{ label: string; value: string }>;
+  filterOptions?: Array<{ label: string; value: string | number }>;
   html?: (row: Record<string, unknown>) => string;
 }
 
 interface ListPageLayoutProps {
-  /** Page title */
   title: string;
-  /** Extra info shown below title (e.g. display-only URL params) */
   subtitle?: React.ReactNode;
-  /** Table data */
   records: Record<string, unknown>[];
-  /** Column definitions */
   columns: TableColumn[];
-  /** Primary key field */
   dataKey: string;
-  /** Total record count (for pagination) */
   total: number;
-  /** Loading state */
   loading?: boolean;
-  /** Current page */
   page: number;
-  /** Rows per page */
   perPage: number;
-  /** Page change handler */
   onPageChange: (page: number) => void;
-  /** Rows per page change handler */
   onPerPageChange: (perPage: number) => void;
-  /** TkTable onTkRequest handler (sort + filter) */
   onTableRequest: (e: CustomEvent) => void;
-  /** Selection mode — enables checkbox column */
   selectionMode?: 'checkbox';
-  /** Currently selected rows */
   selectedRows?: Record<string, unknown>[];
-  /** Selection change handler */
   onSelectionChange?: (rows: Record<string, unknown>[]) => void;
-  /** Action buttons in header (right side) */
   headerActions?: React.ReactNode;
-  /** CRUD action handler — called when edit/delete buttons in rows are clicked */
   onCrudAction?: (action: string, id: string) => void;
 }
 
@@ -86,7 +69,6 @@ export const ListPageLayout: React.FC<ListPageLayoutProps> = ({
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
-      // Build a normalized request matching our handleTableRequest format
       const normalized: Record<string, unknown> = {};
       if (detail.sortField || (detail.sorts && detail.sorts.length > 0)) {
         const sorts = detail.sorts && detail.sorts.length > 0

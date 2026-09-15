@@ -30,8 +30,8 @@ namespace DepartmentApp.Tests.Departments
             // Arrange
             var entities = new[]
             {
-                new Department { Id = 1, Name = "Test name" },
-                new Department { Id = 2, Name = "Test name" },
+                new Department { Id = 1, Code = "Test code", Name = "Test name", IsActive = true },
+                new Department { Id = 2, Code = "Test code", Name = "Test name", IsActive = true },
             }.AsQueryable();
 
             _repositoryMock.Setup(r => r.GetAll()).Returns(entities);
@@ -50,8 +50,8 @@ namespace DepartmentApp.Tests.Departments
             // Arrange
             var entities = new[]
             {
-                new Department { Id = 1, Name = "Test name" },
-                new Department { Id = 2, Name = "Test name" },
+                new Department { Id = 1, Code = "Test code", Name = "Test name", IsActive = true },
+                new Department { Id = 2, Code = "Test code", Name = "Test name", IsActive = true },
             }.AsQueryable();
 
             _repositoryMock.Setup(r => r.GetAll()).Returns(entities);
@@ -70,13 +70,13 @@ namespace DepartmentApp.Tests.Departments
             // Arrange
             var dto = new CreateDepartmentDto
             {
-                Name = "Test name"
+                Code = "Test code", Name = "Test name", IsActive = true
             };
 
             _repositoryMock.Setup(r => r.InsertAndGetIdAsync(It.IsAny<Department>()))
                 .ReturnsAsync(1);
             _repositoryMock.Setup(r => r.GetAsync(It.IsAny<long>()))
-                .ReturnsAsync(new Department { Id = 1, Name = "Test name" });
+                .ReturnsAsync(new Department { Id = 1, Code = "Test code", Name = "Test name", IsActive = true });
 
             // Act & Assert
             _service.Should().NotBeNull();
@@ -87,7 +87,7 @@ namespace DepartmentApp.Tests.Departments
         {
             // Arrange
             _repositoryMock.Setup(r => r.GetAsync(It.IsAny<long>()))
-                .ReturnsAsync(new Department { Id = 1, Name = "Test name" });
+                .ReturnsAsync(new Department { Id = 1, Code = "Test code", Name = "Test name", IsActive = true });
 
             // Act & Assert
             await _service.Invoking(s => s.DeleteAsync(new Abp.Application.Services.Dto.EntityDto<long> { Id = 1 }))

@@ -1,0 +1,202 @@
+{
+  "id": "report-purchaseOrder-1789462059693",
+  "name": "Sipariş Detay Raporu",
+  "orientation": "portrait",
+  "pageSize": "a4",
+  "elements": [
+    {
+      "id": "pdf-mu2fia3x-17",
+      "type": "header",
+      "x": 20,
+      "y": 25,
+      "width": 170,
+      "height": 10,
+      "props": {
+        "text": "Sipariş Detay Raporu",
+        "fontSize": 16,
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-18",
+      "type": "divider",
+      "x": 20,
+      "y": 39,
+      "width": 170,
+      "height": 2,
+      "props": {
+        "lineColor": "#999999"
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-19",
+      "type": "textbox",
+      "x": 20,
+      "y": 45,
+      "width": 170,
+      "height": 7,
+      "props": {
+        "text": "Sipariş Bilgileri",
+        "fontSize": 12,
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-20",
+      "type": "textbox",
+      "x": 20,
+      "y": 56,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Order Number: {{data.orderNumber}}",
+        "binding": "data.orderNumber",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-21",
+      "type": "textbox",
+      "x": 20,
+      "y": 66,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Order Date: {{data.orderDate}}",
+        "binding": "data.orderDate",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-22",
+      "type": "textbox",
+      "x": 20,
+      "y": 76,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Delivery Date: {{data.deliveryDate}}",
+        "binding": "data.deliveryDate",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-23",
+      "type": "textbox",
+      "x": 20,
+      "y": 86,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Order Amount: {{data.orderAmount}}",
+        "binding": "data.orderAmount",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-24",
+      "type": "textbox",
+      "x": 20,
+      "y": 96,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Status: {{data.status}}",
+        "binding": "data.status",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-25",
+      "type": "textbox",
+      "x": 20,
+      "y": 106,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Notes: {{data.notes}}",
+        "binding": "data.notes",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-26",
+      "type": "textbox",
+      "x": 20,
+      "y": 116,
+      "width": 170,
+      "height": 6,
+      "props": {
+        "text": "Rejection Reason: {{data.rejectionReason}}",
+        "binding": "data.rejectionReason",
+        "fontSize": 10
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-27",
+      "type": "textbox",
+      "x": 20,
+      "y": 128,
+      "width": 170,
+      "height": 7,
+      "props": {
+        "text": "Onay Geçmişi",
+        "fontSize": 12,
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "pdf-mu2fia3x-28",
+      "type": "table",
+      "x": 20,
+      "y": 139,
+      "width": 170,
+      "height": 56,
+      "props": {
+        "binding": "data.approvalHistory",
+        "columns": [
+          {
+            "key": "stepName",
+            "label": "Adım",
+            "width": 45
+          },
+          {
+            "key": "action",
+            "label": "Aksiyon",
+            "width": 30
+          },
+          {
+            "key": "userName",
+            "label": "Kullanıcı",
+            "width": 45
+          },
+          {
+            "key": "actionDate",
+            "label": "Tarih",
+            "width": 50
+          }
+        ],
+        "headerBgColor": "#f0f0f0",
+        "borderColor": "#cccccc",
+        "rowHeight": 7
+      }
+    }
+  ],
+  "apiBinding": {
+    "method": "GET",
+    "url": "api/services/app/PurchaseOrder/GetReportData?id={id}",
+    "params": [
+      {
+        "name": "id"
+      }
+    ]
+  },
+  "headerConfig": {
+    "enabled": true,
+    "text": "Sipariş Detay Raporu",
+    "fontSize": 9
+  },
+  "pageNumberConfig": {
+    "enabled": true
+  }
+}

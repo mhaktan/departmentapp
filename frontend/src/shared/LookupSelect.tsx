@@ -28,8 +28,8 @@ type Option = { label: string; value: string };
 const getDisplay = (item: Record<string, unknown>, field?: string): string => {
   if (field && item[field] != null) return String(item[field]);
   return String(
-    item.name ?? item.title ?? item.label ?? item.displayName ??
-    item.Name ?? item.Title ?? item.Label ?? item.id ?? ''
+    item.name ?? item.title ?? item.fullName ?? item.displayName ?? item.code ?? item.label ??
+    item.Name ?? item.Title ?? item.FullName ?? item.DisplayName ?? item.Code ?? item.Label ?? item.id ?? ''
   );
 };
 

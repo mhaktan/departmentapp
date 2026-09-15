@@ -1,5 +1,5 @@
 import React from 'react';
-import { TkCard } from '@takeoff-ui/react';
+import { UiCard } from '../../shared/ui';
 
 import {
   ResponsiveContainer,
@@ -12,15 +12,6 @@ import {
 import { API_BASE } from '../../config';
 import { getRequestHeaders } from '../../dataProvider';
 
-
-const chartData = [
-  { name: 'Jan', value: 400, value2: 240 },
-  { name: 'Feb', value: 300, value2: 139 },
-  { name: 'Mar', value: 600, value2: 380 },
-  { name: 'Apr', value: 450, value2: 290 },
-  { name: 'May', value: 700, value2: 480 },
-  { name: 'Jun', value: 550, value2: 420 },
-];
 
 const LOADING_KEYFRAMES = `
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -73,12 +64,12 @@ export const DashboardScreen: React.FC = () => {
     return [];
   };
 
-  const [api_block_1Data, setApi_block_1Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_1Loading, setApi_block_1Loading] = React.useState(true);
+  const [mytasks_0Data, setMytasks_0Data] = React.useState<Record<string, unknown> | null>(null);
+  const [mytasks_0Loading, setMytasks_0Loading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/Department/GetAll`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/Approval/GetMyPendingApprovals`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -89,19 +80,21 @@ export const DashboardScreen: React.FC = () => {
         const rawJson = await res.json();
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_1Data(json);
+        setMytasks_0Data(json);
       } catch { /* ignore */ }
-      finally { setApi_block_1Loading(false); }
+      finally { setMytasks_0Loading(false); }
     };
     fetchData();
+    const timer = setInterval(fetchData, 30000);
+    return () => clearInterval(timer);
   }, []);
 
-  const [api_block_2Data, setApi_block_2Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_2Loading, setApi_block_2Loading] = React.useState(true);
+  const [breakdown_purchaseRequest_1Data, setBreakdown_purchaseRequest_1Data] = React.useState<Record<string, unknown>[]>([]);
+  const [breakdown_purchaseRequest_1Loading, setBreakdown_purchaseRequest_1Loading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/Branch/GetAll`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/PurchaseRequest/GetGroupedCount?GroupBy=Status`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -112,19 +105,20 @@ export const DashboardScreen: React.FC = () => {
         const rawJson = await res.json();
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_2Data(json);
+        const target = getNestedValue(rawJson as Record<string, unknown>, 'result') ?? getNestedValue(json, 'result');
+        setBreakdown_purchaseRequest_1Data(extractArray(target ?? json));
       } catch { /* ignore */ }
-      finally { setApi_block_2Loading(false); }
+      finally { setBreakdown_purchaseRequest_1Loading(false); }
     };
     fetchData();
   }, []);
 
-  const [api_block_3Data, setApi_block_3Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_3Loading, setApi_block_3Loading] = React.useState(true);
+  const [breakdown_purchaseRequest_2Data, setBreakdown_purchaseRequest_2Data] = React.useState<Record<string, unknown>[]>([]);
+  const [breakdown_purchaseRequest_2Loading, setBreakdown_purchaseRequest_2Loading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/Employee/GetAll`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/PurchaseRequest/GetGroupedCount?GroupBy=DepartmentId`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -135,19 +129,20 @@ export const DashboardScreen: React.FC = () => {
         const rawJson = await res.json();
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_3Data(json);
+        const target = getNestedValue(rawJson as Record<string, unknown>, 'result') ?? getNestedValue(json, 'result');
+        setBreakdown_purchaseRequest_2Data(extractArray(target ?? json));
       } catch { /* ignore */ }
-      finally { setApi_block_3Loading(false); }
+      finally { setBreakdown_purchaseRequest_2Loading(false); }
     };
     fetchData();
   }, []);
 
-  const [api_block_4Data, setApi_block_4Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_4Loading, setApi_block_4Loading] = React.useState(true);
+  const [breakdown_purchaseOrder_3Data, setBreakdown_purchaseOrder_3Data] = React.useState<Record<string, unknown>[]>([]);
+  const [breakdown_purchaseOrder_3Loading, setBreakdown_purchaseOrder_3Loading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/EmployeeCertificate/GetAll`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/PurchaseOrder/GetGroupedCount?GroupBy=Status`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -158,111 +153,20 @@ export const DashboardScreen: React.FC = () => {
         const rawJson = await res.json();
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_4Data(json);
+        const target = getNestedValue(rawJson as Record<string, unknown>, 'result') ?? getNestedValue(json, 'result');
+        setBreakdown_purchaseOrder_3Data(extractArray(target ?? json));
       } catch { /* ignore */ }
-      finally { setApi_block_4Loading(false); }
+      finally { setBreakdown_purchaseOrder_3Loading(false); }
     };
     fetchData();
   }, []);
 
-  const [api_block_5Data, setApi_block_5Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_5Loading, setApi_block_5Loading] = React.useState(true);
+  const [list_purchaseRequest_4_tableData, setList_purchaseRequest_4_tableData] = React.useState<Record<string, unknown> | null>(null);
+  const [list_purchaseRequest_4_tableLoading, setList_purchaseRequest_4_tableLoading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/DisciplinaryRecord/GetAll`, { headers: getRequestHeaders() });
-        // Token expired or invalid — clear auth and redirect to login
-        if (res.status === 401) {
-          ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
-          if (window.location.pathname !== '/login') window.location.href = '/login';
-          return;
-        }
-        if (!res.ok) return;
-        const rawJson = await res.json();
-        // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
-        const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_5Data(json);
-      } catch { /* ignore */ }
-      finally { setApi_block_5Loading(false); }
-    };
-    fetchData();
-  }, []);
-
-  const [api_block_6Data, setApi_block_6Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_6Loading, setApi_block_6Loading] = React.useState(true);
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/services/app/OvertimeRecord/GetAll`, { headers: getRequestHeaders() });
-        // Token expired or invalid — clear auth and redirect to login
-        if (res.status === 401) {
-          ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
-          if (window.location.pathname !== '/login') window.location.href = '/login';
-          return;
-        }
-        if (!res.ok) return;
-        const rawJson = await res.json();
-        // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
-        const json = unwrapResponse(rawJson) as Record<string, unknown>;
-        setApi_block_6Data(json);
-      } catch { /* ignore */ }
-      finally { setApi_block_6Loading(false); }
-    };
-    fetchData();
-  }, []);
-
-  const [api_block_7Data, setApi_block_7Data] = React.useState<Record<string, unknown>[]>([]);
-  const [api_block_7Loading, setApi_block_7Loading] = React.useState(true);
-  React.useEffect(() => {
-    const sources = [
-      { name: 'Departman', url: `${API_BASE}/api/services/app/Department/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Şube', url: `${API_BASE}/api/services/app/Branch/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Personel', url: `${API_BASE}/api/services/app/Employee/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Personel Sertifikası', url: `${API_BASE}/api/services/app/EmployeeCertificate/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Disiplin Kaydı', url: `${API_BASE}/api/services/app/DisciplinaryRecord/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Fazla Mesai Kaydı', url: `${API_BASE}/api/services/app/OvertimeRecord/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-    ];
-    Promise.all(sources.map(async (s) => {
-      try {
-        const res = await fetch(s.url, { headers: getRequestHeaders() });
-        if (res.status === 401) { ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k)); if (window.location.pathname !== '/login') window.location.href = '/login'; return { name: s.name, value: 0 }; }
-        if (!res.ok) return { name: s.name, value: 0 };
-        const json = unwrapResponse(await res.json()) as Record<string, unknown>;
-        const v = getNestedValue(json, s.path);
-        return { name: s.name, value: typeof v === 'number' ? v : Number(v) || 0 };
-      } catch { return { name: s.name, value: 0 }; }
-    })).then((rows) => { setApi_block_7Data(rows); setApi_block_7Loading(false); });
-  }, []);
-
-  const [api_block_8Data, setApi_block_8Data] = React.useState<Record<string, unknown>[]>([]);
-  const [api_block_8Loading, setApi_block_8Loading] = React.useState(true);
-  React.useEffect(() => {
-    const sources = [
-      { name: 'Departman', url: `${API_BASE}/api/services/app/Department/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Şube', url: `${API_BASE}/api/services/app/Branch/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Personel', url: `${API_BASE}/api/services/app/Employee/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Personel Sertifikası', url: `${API_BASE}/api/services/app/EmployeeCertificate/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Disiplin Kaydı', url: `${API_BASE}/api/services/app/DisciplinaryRecord/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-      { name: 'Fazla Mesai Kaydı', url: `${API_BASE}/api/services/app/OvertimeRecord/GetAll?MaxResultCount=1`, path: 'result.totalCount' },
-    ];
-    Promise.all(sources.map(async (s) => {
-      try {
-        const res = await fetch(s.url, { headers: getRequestHeaders() });
-        if (res.status === 401) { ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k)); if (window.location.pathname !== '/login') window.location.href = '/login'; return { name: s.name, value: 0 }; }
-        if (!res.ok) return { name: s.name, value: 0 };
-        const json = unwrapResponse(await res.json()) as Record<string, unknown>;
-        const v = getNestedValue(json, s.path);
-        return { name: s.name, value: typeof v === 'number' ? v : Number(v) || 0 };
-      } catch { return { name: s.name, value: 0 }; }
-    })).then((rows) => { setApi_block_8Data(rows); setApi_block_8Loading(false); });
-  }, []);
-
-  const [api_block_9Data, setApi_block_9Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_9Loading, setApi_block_9Loading] = React.useState(true);
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/services/app/Department/GetAll?MaxResultCount=5&Sorting=id desc`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/PurchaseRequest/GetAll?StatusIn=0%2C1%2C2&NeededDateTo=2026-09-15&MaxResultCount=10&Sorting=id%20desc`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -274,19 +178,19 @@ export const DashboardScreen: React.FC = () => {
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
         const target = getNestedValue(rawJson as Record<string, unknown>, 'result.items') ?? getNestedValue(json, 'result.items');
-        setApi_block_9Data(target != null ? (target as Record<string, unknown>) : json);
+        setList_purchaseRequest_4_tableData(target != null ? (target as Record<string, unknown>) : json);
       } catch { /* ignore */ }
-      finally { setApi_block_9Loading(false); }
+      finally { setList_purchaseRequest_4_tableLoading(false); }
     };
     fetchData();
   }, []);
 
-  const [api_block_10Data, setApi_block_10Data] = React.useState<Record<string, unknown> | null>(null);
-  const [api_block_10Loading, setApi_block_10Loading] = React.useState(true);
+  const [list_purchaseOrder_5_tableData, setList_purchaseOrder_5_tableData] = React.useState<Record<string, unknown> | null>(null);
+  const [list_purchaseOrder_5_tableLoading, setList_purchaseOrder_5_tableLoading] = React.useState(true);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/services/app/Branch/GetAll?MaxResultCount=5&Sorting=id desc`, { headers: getRequestHeaders() });
+        const res = await fetch(`${API_BASE}/api/services/app/PurchaseOrder/GetAll?StatusNot=2&DeliveryDateTo=2026-09-15&MaxResultCount=10&Sorting=id%20desc`, { headers: getRequestHeaders() });
         // Token expired or invalid — clear auth and redirect to login
         if (res.status === 401) {
           ['_auth_token', '_bearer_token', '_refresh_token'].forEach(k => localStorage.removeItem(k));
@@ -298,9 +202,9 @@ export const DashboardScreen: React.FC = () => {
         // Auto-unwrap ABP/generic envelopes so {result.totalCount} or bare {totalCount} both work
         const json = unwrapResponse(rawJson) as Record<string, unknown>;
         const target = getNestedValue(rawJson as Record<string, unknown>, 'result.items') ?? getNestedValue(json, 'result.items');
-        setApi_block_10Data(target != null ? (target as Record<string, unknown>) : json);
+        setList_purchaseOrder_5_tableData(target != null ? (target as Record<string, unknown>) : json);
       } catch { /* ignore */ }
-      finally { setApi_block_10Loading(false); }
+      finally { setList_purchaseOrder_5_tableLoading(false); }
     };
     fetchData();
   }, []);
@@ -310,163 +214,39 @@ export const DashboardScreen: React.FC = () => {
       <style dangerouslySetInnerHTML={{ __html: LOADING_KEYFRAMES }} />
       <h1 style={{ margin: '0 0 24px', fontSize: 22, fontWeight: 700 }}>Dashboard</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_1Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Departman</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#1976d2' }}>{(getNestedValue(api_block_1Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
-            </div>
-          </TkCard>
-          )}
+        <div style={{ gridColumn: 'span 12' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16 }}>
+            <div style={{ gridColumn: 'span 1' }}>
+              {mytasks_0Loading ? (
+                <UiCard bodyStyle={{ padding: 20 }}>
+                  <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
+                  <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
+                  <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
+                </UiCard>
+              ) : (
+              <UiCard bodyStyle={{ padding: 20 }}>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Onayımı Bekleyen Talepler / Siparişler</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#1976d2' }}>{Array.isArray((Array.isArray(mytasks_0Data) ? mytasks_0Data as unknown[] : mytasks_0Data?.['result'])) ? ((Array.isArray(mytasks_0Data) ? mytasks_0Data as unknown[] : mytasks_0Data?.['result']) as unknown[]).length : (((Array.isArray(mytasks_0Data) ? mytasks_0Data as unknown[] : mytasks_0Data?.['result']) as string | number) ?? '—')}</div>
+              </UiCard>
+              )}
 
-        </div>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_2Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Şube</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#4caf50' }}>{(getNestedValue(api_block_2Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
             </div>
-          </TkCard>
-          )}
-
-        </div>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_3Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Personel</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#ff9800' }}>{(getNestedValue(api_block_3Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
-            </div>
-          </TkCard>
-          )}
-
-        </div>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_4Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Personel Sertifikası</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#e91e63' }}>{(getNestedValue(api_block_4Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
-            </div>
-          </TkCard>
-          )}
-
-        </div>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_5Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Disiplin Kaydı</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#9c27b0' }}>{(getNestedValue(api_block_5Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
-            </div>
-          </TkCard>
-          )}
-
-        </div>
-        <div style={{ gridColumn: 'span 3' }}>
-          {api_block_6Loading ? (
-            <TkCard>
-              <div slot="content" style={{ padding: 20 }}>
-                <div style={{ height: 12, width: '40%', background: '#e0e0e0', borderRadius: 4, marginBottom: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 28, width: '60%', background: '#e0e0e0', borderRadius: 4, marginBottom: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
-                <div style={{ height: 10, width: '50%', background: '#f0f0f0', borderRadius: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard>
-            <div slot="content" style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Total Fazla Mesai Kaydı</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#00bcd4' }}>{(getNestedValue(api_block_6Data ?? {}, 'result.result.totalCount') as string | number) ?? '—'}</div>
-            </div>
-          </TkCard>
-          )}
-
+          </div>
         </div>
         <div style={{ gridColumn: 'span 6' }}>
-          {api_block_7Loading ? (
-            <TkCard header="Kayıt Sayıları">
-              <div slot="content" style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 32, height: 32, border: '3px solid #e0e0e0', borderTopColor: '#1976d2', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                  <span style={{ fontSize: 12, color: '#999' }}>Loading...</span>
-                </div>
+          {breakdown_purchaseRequest_1Loading ? (
+            <UiCard header="Durum Bazında Talep Dağılımı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 32, height: 32, border: '3px solid #e0e0e0', borderTopColor: '#1976d2', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <span style={{ fontSize: 12, color: '#999' }}>Loading...</span>
               </div>
-            </TkCard>
+            </UiCard>
           ) : (
-          <TkCard header="Kayıt Sayıları">
-            <div slot="content" style={{ padding: 16 }}>
-              <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={api_block_7Data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#1976d2" />
-                  </BarChart>
-                </ResponsiveContainer>
-            </div>
-          </TkCard>
-          )}
-        </div>
-        <div style={{ gridColumn: 'span 6' }}>
-          {api_block_8Loading ? (
-            <TkCard header="Dağılım">
-              <div slot="content" style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 32, height: 32, border: '3px solid #e0e0e0', borderTopColor: '#1976d2', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                  <span style={{ fontSize: 12, color: '#999' }}>Loading...</span>
-                </div>
-              </div>
-            </TkCard>
-          ) : (
-          <TkCard header="Dağılım">
-            <div slot="content" style={{ padding: 16 }}>
-              <ResponsiveContainer width="100%" height={280}>
+          <UiCard header="Durum Bazında Talep Dağılımı" bodyStyle={{ padding: 16 }}>
+            <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
-                    <Pie data={api_block_8Data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                      <Cell fill="#1976d2" />
+                    <Pie data={breakdown_purchaseRequest_1Data} dataKey="count" nameKey="label" cx="50%" cy="50%" outerRadius={80} label>
+                      <Cell fill="#8c2deb" />
                       <Cell fill="#ff9800" />
                       <Cell fill="#4caf50" />
                       <Cell fill="#e91e63" />
@@ -475,40 +255,96 @@ export const DashboardScreen: React.FC = () => {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-            </div>
-          </TkCard>
+          </UiCard>
           )}
         </div>
         <div style={{ gridColumn: 'span 6' }}>
-          <div style={{ background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e8e8e8' }}>
-            {api_block_9Loading ? (
-              <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>Loading...</div>
-            ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>ID</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Name</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Code</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Description</th></tr></thead>
-                <tbody>
-                  {(Array.isArray(api_block_9Data) ? api_block_9Data : extractArray(api_block_9Data)).map((row: Record<string, unknown>, i: number) => (
-                    <tr key={i}><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['id'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['name'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['code'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['description'] ?? '')}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+          {breakdown_purchaseRequest_2Loading ? (
+            <UiCard header="Birim Bazında Talep Tutarı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 32, height: 32, border: '3px solid #e0e0e0', borderTopColor: '#1976d2', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <span style={{ fontSize: 12, color: '#999' }}>Loading...</span>
+              </div>
+            </UiCard>
+          ) : (
+          <UiCard header="Birim Bazında Talep Tutarı" bodyStyle={{ padding: 16 }}>
+            <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={breakdown_purchaseRequest_2Data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="label" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#8c2deb" />
+                  </BarChart>
+                </ResponsiveContainer>
+          </UiCard>
+          )}
         </div>
         <div style={{ gridColumn: 'span 6' }}>
-          <div style={{ background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e8e8e8' }}>
-            {api_block_10Loading ? (
-              <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>Loading...</div>
-            ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>ID</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Name</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Address</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Phone</th></tr></thead>
-                <tbody>
-                  {(Array.isArray(api_block_10Data) ? api_block_10Data : extractArray(api_block_10Data)).map((row: Record<string, unknown>, i: number) => (
-                    <tr key={i}><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['id'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['name'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['address'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['phone'] ?? '')}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+          {breakdown_purchaseOrder_3Loading ? (
+            <UiCard header="Durum Bazında Sipariş Dağılımı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 32, height: 32, border: '3px solid #e0e0e0', borderTopColor: '#1976d2', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <span style={{ fontSize: 12, color: '#999' }}>Loading...</span>
+              </div>
+            </UiCard>
+          ) : (
+          <UiCard header="Durum Bazında Sipariş Dağılımı" bodyStyle={{ padding: 16 }}>
+            <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie data={breakdown_purchaseOrder_3Data} dataKey="count" nameKey="label" cx="50%" cy="50%" outerRadius={80} label>
+                      <Cell fill="#8c2deb" />
+                      <Cell fill="#ff9800" />
+                      <Cell fill="#4caf50" />
+                      <Cell fill="#e91e63" />
+                      <Cell fill="#9c27b0" />
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+          </UiCard>
+          )}
+        </div>
+        <div style={{ gridColumn: 'span 12' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 12px' }}>İhtiyaç Tarihi Geçmiş Onaylanmamış Talepler</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16 }}>
+            <div style={{ gridColumn: 'span 1' }}>
+              <div style={{ background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e8e8e8' }}>
+                {list_purchaseRequest_4_tableLoading ? (
+                  <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>Loading...</div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead><tr><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Request Number</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Needed Date</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Total Amount</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Status</th></tr></thead>
+                    <tbody>
+                      {(Array.isArray(list_purchaseRequest_4_tableData) ? list_purchaseRequest_4_tableData : extractArray(list_purchaseRequest_4_tableData)).map((row: Record<string, unknown>, i: number) => (
+                        <tr key={i}><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['requestNumber'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['neededDate'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['totalAmount'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['status'] ?? '')}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ gridColumn: 'span 12' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 12px' }}>Teslim Tarihi Geçmiş Siparişler</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16 }}>
+            <div style={{ gridColumn: 'span 1' }}>
+              <div style={{ background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e8e8e8' }}>
+                {list_purchaseOrder_5_tableLoading ? (
+                  <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>Loading...</div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead><tr><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Order Number</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Order Date</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Delivery Date</th><th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', fontSize: 12, color: '#666' }}>Status</th></tr></thead>
+                    <tbody>
+                      {(Array.isArray(list_purchaseOrder_5_tableData) ? list_purchaseOrder_5_tableData : extractArray(list_purchaseOrder_5_tableData)).map((row: Record<string, unknown>, i: number) => (
+                        <tr key={i}><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['orderNumber'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['orderDate'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['deliveryDate'] ?? '')}</td><td style={{ padding: '8px 12px', borderBottom: '1px solid #f0f0f0', fontSize: 13 }}>{String(row['status'] ?? '')}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

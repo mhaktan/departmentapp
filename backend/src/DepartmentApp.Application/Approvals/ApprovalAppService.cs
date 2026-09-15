@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Abp.Application.Services;
+using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Net.Mail;
@@ -24,6 +25,10 @@ namespace DepartmentApp.Approvals
         Task<List<PendingApprovalDto>> GetMyPendingApprovalsAsync();
     }
 
+    // Entity-agnostik servis oldugu icin entity bazli permission verilemez; sinif duzeyinde
+    // permission adi olmadan AbpAuthorize = "sadece authenticated kullanici" korumasi.
+    // ProcessApprovalAsync ayrica kendi icinde assignee kontrolu yapar.
+    [AbpAuthorize]
     public class ApprovalAppService : ApplicationService, IApprovalAppService
     {
         private readonly IRepository<ApprovalRecord, Guid> _approvalRepo;
@@ -65,11 +70,23 @@ namespace DepartmentApp.Approvals
         }
 
         // Helper: role names assigned to a user (used to expand "My Tasks" with role-broadcast records).
+        /// <summary>
+        /// Kullanicinin rol ADLARI. Navigation (ur.Role.Name) KULLANILMAZ: DbContext'te
+        /// UserRole -> AppRole iliskisi eslenmemisse EF bos isim donduruyor ve rol bazli
+        /// atanmis onaylar "My Tasks"ta hic gorunmuyor (sessiz hata, derleme kirilmiyor).
+        /// Bunun yerine iki adimda, id uzerinden okunur.
+        /// </summary>
         private List<string> GetUserRoleNames(long userId)
         {
-            return _userRoleRepo.GetAll()
+            var roleIds = _userRoleRepo.GetAll()
                 .Where(ur => ur.UserId == userId)
-                .Select(ur => ur.Role.Name)
+                .Select(ur => ur.RoleId)
+                .ToList();
+            if (roleIds.Count == 0) return new List<string>();
+
+            return _roleRepo.GetAll()
+                .Where(r => roleIds.Contains(r.Id))
+                .Select(r => r.Name)
                 .Where(n => n != null)
                 .ToList();
         }
@@ -167,26 +184,52 @@ namespace DepartmentApp.Approvals
             // Look up the approval node config so we can drive next-step + assignee from the flow
             // definition rather than relying on the client to send NextAssigneeUserId.
             var flow = _flowEngine.GetFlowById(record.FlowId);
-            var node = flow?.Nodes?.FirstOrDefault(n => n.Id == record.NodeId);
+            // NodeId eskiden her uretimde degisiyordu; eski kayitlar hicbir dugume
+            // denk gelmeyince adim listesi BOS okunuyor, onay "son adim" sanilip
+            // kalan adimlar sessizce atlaniyordu. Bulunamazsa akisin onay dugumune dus.
+            var node = flow?.Nodes?.FirstOrDefault(n => n.Id == record.NodeId)
+                       ?? flow?.Nodes?.FirstOrDefault(n => n.Approval?.Steps != null && n.Approval.Steps.Any());
+            if (node != null && node.Id != record.NodeId)
+            {
+                Logger.Warn($"ApprovalRecord {record.Id} NodeId '{record.NodeId}' bulunamadi; '{node.Id}' dugumune duseldi.");
+                record.NodeId = node.Id;
+            }
             var steps = node?.Approval?.Steps ?? new List<FlowApprovalStep>();
+            if (steps.Count == 0)
+                throw new UserFriendlyException("Approval steps could not be resolved for this record (flow definition missing).");
 
             if (input.Action == "Approve")
             {
                 var nextIdx = record.StepIndex + 1;
                 var hasNextStep = nextIdx < steps.Count;
 
+                FlowApprovalStep nextStep = null;
+                long nextUserId = 0;
+                string nextRole = null;
+
                 if (hasNextStep)
                 {
-                    var nextStep = steps[nextIdx];
-                    var (nextUserId, nextRole) = await ResolveAssigneeFromEntityAsync(record.EntityType, record.EntityId, nextStep);
+                    nextStep = steps[nextIdx];
+                    var resolved = await ResolveAssigneeFromEntityAsync(record.EntityType, record.EntityId, nextStep);
+                    nextUserId = resolved.userId;
+                    nextRole = resolved.roleName;
                     if (nextUserId <= 0 && string.IsNullOrEmpty(nextRole))
                         throw new UserFriendlyException(
                             $"Next step '{nextStep.Name}' assignee could not be resolved (assigneeType={nextStep.AssigneeType}, value={nextStep.AssigneeValue}).");
 
-                    record.Status = "Approved";
                     record.NextAssigneeUserId = nextUserId > 0 ? (long?)nextUserId : null;
-                    await _approvalRepo.UpdateAsync(record);
+                }
 
+                record.Status = "Approved";
+                await _approvalRepo.UpdateAsync(record);
+
+                // Once ilerlet: entity'nin state machine'i (ChangeStatusAsync) gecis haritasinin sahibi.
+                // Sonraki adimin kaydi ancak status degisimi basarili olduktan sonra acilir — aksi halde
+                // status degisimi patlarsa onaycinin gelen kutusunda sahte bir "Pending" kayit kalabilir.
+                await TryChangeEntityStatusAsync(record.EntityType, record.EntityId, "Approve", input.Comment);
+
+                if (hasNextStep)
+                {
                     await _approvalRepo.InsertAsync(new ApprovalRecord
                     {
                         EntityType = record.EntityType,
@@ -200,23 +243,15 @@ namespace DepartmentApp.Approvals
                         Status = "Pending"
                     });
                 }
-                else
-                {
-                    record.Status = "Approved";
-                    await _approvalRepo.UpdateAsync(record);
-                }
-
-                // Drive the entity's state machine forward — its ChangeStatusAsync owns the transition map.
-                await TryChangeEntityStatusAsync(record.EntityType, record.EntityId, "Approve", input.Comment);
             }
             else if (input.Action == "Revise")
             {
                 record.Status = "Revised";
                 await _approvalRepo.UpdateAsync(record);
 
-                // Sends the entity back to its creator (revisionAssignee="creator" on the flow node) by
-                // moving the entity status to Revision; the entity list filtered by Revision becomes the
-                // creator's revise inbox until they resubmit.
+                // Red her zaman entity'yi state machine'in "Revise" gecisine gonderir (tek davranis).
+                // Hedef durum state machine tarafindan belirlenir; o durumla filtrelenen liste
+                // olusturucunun revize gelen kutusu olur.
                 await TryChangeEntityStatusAsync(record.EntityType, record.EntityId, "Revise", input.Comment);
             }
 
@@ -270,20 +305,42 @@ namespace DepartmentApp.Approvals
         // duplicate state-machine logic in two places.
         private async Task TryChangeEntityStatusAsync(string entityType, string entityIdStr, string action, string comment)
         {
-            if (!long.TryParse(entityIdStr, out var entityId)) return;
+            if (!long.TryParse(entityIdStr, out var entityId))
+                throw new UserFriendlyException($"Approval record has an unusable entity id '{entityIdStr}'.");
             try
             {
                 var rootNs = GetType().Namespace?.Split('.')[0] ?? "DepartmentApp";
                 var pluralNs = $"{rootNs}.{entityType}s";
                 var ifaceTypeName = $"{pluralNs}.I{entityType}AppService, {rootNs}.Application";
-                var iface = System.Type.GetType(ifaceTypeName);
-                if (iface == null) { Logger.Warn($"No app service interface for entity '{entityType}' (looked for {ifaceTypeName})"); return; }
+                // Once ad tahmini, tutmazsa yuklu assembly'lerde ara. Tek bir namespace/
+                // cogul-ek tahminine bagli kalmak tum onay akisini sessizce durduruyordu.
+                var iface = System.Type.GetType(ifaceTypeName) ?? FindTypeByName($"I{entityType}AppService", true);
+                if (iface == null)
+                {
+                    Logger.Error($"No app service interface for entity '{entityType}' (looked for {ifaceTypeName})");
+                    throw new UserFriendlyException($"Status could not be updated: app service for '{entityType}' was not found.");
+                }
 
                 var method = iface.GetMethod("ChangeStatusAsync");
-                if (method == null) { Logger.Warn($"{iface.Name} has no ChangeStatusAsync method; skipping status update."); return; }
+                if (method == null)
+                {
+                    Logger.Error($"{iface.Name} has no ChangeStatusAsync method.");
+                    throw new UserFriendlyException($"Status could not be updated: '{entityType}' has no state machine.");
+                }
 
-                var changeStatusInputType = System.Type.GetType($"{pluralNs}.Dto.ChangeStatusInput, {rootNs}.Application");
-                if (changeStatusInputType == null) { Logger.Warn($"ChangeStatusInput type missing for '{entityType}'"); return; }
+                // ChangeStatusInput PAYLASILAN namespace'te ({ns}.StateMachine.Dto) uretiliyor.
+                // Onceden entity bazli namespace'te aranıyordu; tip bulunamayinca bu metod
+                // sessizce donuyor ve ONAY TAMAMLANSA BILE entity durumu ilerlemiyordu.
+                // Eski projeler icin entity bazli ad da yedek olarak deneniyor.
+                var changeStatusInputType =
+                    System.Type.GetType($"{rootNs}.StateMachine.Dto.ChangeStatusInput, {rootNs}.Application")
+                    ?? System.Type.GetType($"{pluralNs}.Dto.ChangeStatusInput, {rootNs}.Application")
+                    ?? FindTypeByName("ChangeStatusInput", false);
+                if (changeStatusInputType == null)
+                {
+                    Logger.Error($"ChangeStatusInput type missing for '{entityType}'");
+                    throw new UserFriendlyException("Status could not be updated: ChangeStatusInput type was not found.");
+                }
 
                 var changeInput = Activator.CreateInstance(changeStatusInputType);
                 changeStatusInputType.GetProperty("Action")?.SetValue(changeInput, action);
@@ -311,7 +368,33 @@ namespace DepartmentApp.Approvals
         private System.Type ResolveEntityClrType(string entityType)
         {
             var rootNs = GetType().Namespace?.Split('.')[0] ?? "DepartmentApp";
-            return System.Type.GetType($"{rootNs}.Entities.{entityType}, {rootNs}.Core");
+            return System.Type.GetType($"{rootNs}.Entities.{entityType}, {rootNs}.Core")
+                ?? FindTypeByName(entityType, false);
+        }
+
+        // Yuklu assembly'lerde ada gore tip arar (namespace tahmini tutmadiginda yedek).
+        // Sonuc onbellege alinir; GetTypes() her cagride pahalidir.
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, System.Type> _typeCache =
+            new System.Collections.Concurrent.ConcurrentDictionary<string, System.Type>();
+
+        private static System.Type FindTypeByName(string typeName, bool interfaceOnly)
+        {
+            return _typeCache.GetOrAdd($"{typeName}|{interfaceOnly}", _ =>
+            {
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (asm.IsDynamic) continue;
+                    System.Type[] types;
+                    try { types = asm.GetTypes(); }
+                    catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t != null).ToArray(); }
+                    catch { continue; }
+
+                    var hit = types.FirstOrDefault(t =>
+                        t.Name == typeName && (!interfaceOnly || t.IsInterface));
+                    if (hit != null) return hit;
+                }
+                return null;
+            });
         }
 
         public async Task<List<ApprovalRecordDto>> GetApprovalHistoryAsync(string entityType, string entityId)

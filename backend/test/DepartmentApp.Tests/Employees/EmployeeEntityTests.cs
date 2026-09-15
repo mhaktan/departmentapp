@@ -25,28 +25,21 @@ namespace DepartmentApp.Tests.Employees
 
             // Assert
             entity.Id.Should().Be(default(long));
-
+            entity.IsActive.Should().Be(false);
         }
 
         [Fact]
-        public void Employee_EmployeeNumber_ShouldAcceptValue()
+        public void Employee_RegistrationNumber_ShouldAcceptValue()
         {
-            var entity = new Employee { EmployeeNumber = "Test Value" };
-            entity.EmployeeNumber.Should().Be("Test Value");
+            var entity = new Employee { RegistrationNumber = "Test Value" };
+            entity.RegistrationNumber.Should().Be("Test Value");
         }
 
         [Fact]
-        public void Employee_FirstName_ShouldAcceptValue()
+        public void Employee_FullName_ShouldAcceptValue()
         {
-            var entity = new Employee { FirstName = "Test Value" };
-            entity.FirstName.Should().Be("Test Value");
-        }
-
-        [Fact]
-        public void Employee_LastName_ShouldAcceptValue()
-        {
-            var entity = new Employee { LastName = "Test Value" };
-            entity.LastName.Should().Be("Test Value");
+            var entity = new Employee { FullName = "Test Value" };
+            entity.FullName.Should().Be("Test Value");
         }
 
         [Fact]

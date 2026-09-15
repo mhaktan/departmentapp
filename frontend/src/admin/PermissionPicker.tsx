@@ -1,5 +1,5 @@
 import React from 'react';
-import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable, TkDialog } from '@takeoff-ui/react';
+import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable } from '@takeoff-ui/react';
 import { permissionApi, type PermissionDto } from './rbacApi';
 
 interface Props {

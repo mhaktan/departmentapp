@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { TkButton } from '@takeoff-ui/react';
+import { dataProvider } from '../../dataProvider';
 import { useListQuery } from '../../shared/useListQuery';
 import { useDeleteMutation } from '../../shared/useDeleteMutation';
 import { DeleteConfirmDialog } from '../../shared/DeleteConfirmDialog';
@@ -16,33 +18,13 @@ import { useFlows } from '../../flows/FlowProvider';
 
 type EmployeeRecord = {
   id: string | number;
-  employeeNumber: string;
-  firstName: string;
-  lastName: string;
+  registrationNumber: string;
+  fullName: string;
   email: string;
-  phone?: string;
-  birthDate?: string;
-  gender?: string;
-  nationalId?: string;
-  address?: string;
-  hireDate: string;
-  terminationDate?: string;
-  jobTitle?: string;
-  employmentType: string;
-  status: string;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-  emergencyContactRelation?: string;
-  bankAccountNumber?: string;
-  bankName?: string;
-  taxNumber?: string;
-  socialSecurityNumber?: string;
-  annualLeaveBalance?: number;
-  notes?: string;
+  title?: string;
+  isActive: boolean;
+  userId: string;
   departmentId: string;
-  branchId: string;
-  employeeId: string;
-  onboardingId: string;
   [key: string]: unknown;
 };
 
@@ -68,33 +50,13 @@ type EmployeeRecord = {
 
 const COLUMNS: TableColumn[] = [
   { field: 'id', header: 'ID', sortable: true },
-  { field: 'employeeNumber', header: 'Employee Number', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'firstName', header: 'First Name', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'lastName', header: 'Last Name', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'email', header: 'Email', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'phone', header: 'Phone', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'birthDate', header: 'Birth Date', sortable: true, filterType: 'datepicker', html: (row: Record<string, unknown>) => row.birthDate ? new Date(String(row.birthDate)).toLocaleDateString() : '—' },
-  { field: 'gender', header: 'Gender', sortable: true, filterType: 'radio', filterOptions: [{ label: 'Male', value: '0' }, { label: 'Female', value: '1' }, { label: 'Other', value: '2' }], html: (row: Record<string, unknown>) => { const m: Record<string, string> = {'0': 'Male', '1': 'Female', '2': 'Other'}; return m[String(row.gender ?? '')] ?? String(row.gender ?? '\u2014'); } },
-  { field: 'nationalId', header: 'National Id', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'address', header: 'Address', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'hireDate', header: 'Hire Date', sortable: true, filterType: 'datepicker', html: (row: Record<string, unknown>) => row.hireDate ? new Date(String(row.hireDate)).toLocaleDateString() : '—' },
-  { field: 'terminationDate', header: 'Termination Date', sortable: true, filterType: 'datepicker', html: (row: Record<string, unknown>) => row.terminationDate ? new Date(String(row.terminationDate)).toLocaleDateString() : '—' },
-  { field: 'jobTitle', header: 'Job Title', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'employmentType', header: 'Employment Type', sortable: true, filterType: 'radio', filterOptions: [{ label: 'FullTime', value: '0' }, { label: 'PartTime', value: '1' }, { label: 'Contract', value: '2' }, { label: 'Intern', value: '3' }], html: (row: Record<string, unknown>) => { const m: Record<string, string> = {'0': 'FullTime', '1': 'PartTime', '2': 'Contract', '3': 'Intern'}; return m[String(row.employmentType ?? '')] ?? String(row.employmentType ?? '\u2014'); } },
-  { field: 'status', header: 'Status', sortable: true, filterType: 'radio', filterOptions: [{ label: 'Active', value: '0' }, { label: 'OnLeave', value: '1' }, { label: 'Terminated', value: '2' }, { label: 'Suspended', value: '3' }], html: (row: Record<string, unknown>) => { const m: Record<string, string> = {'0': 'Active', '1': 'OnLeave', '2': 'Terminated', '3': 'Suspended'}; return m[String(row.status ?? '')] ?? String(row.status ?? '\u2014'); } },
-  { field: 'emergencyContactName', header: 'Emergency Contact Name', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'emergencyContactPhone', header: 'Emergency Contact Phone', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'emergencyContactRelation', header: 'Emergency Contact Relation', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'bankAccountNumber', header: 'Bank Account Number', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'bankName', header: 'Bank Name', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'taxNumber', header: 'Tax Number', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'socialSecurityNumber', header: 'Social Security Number', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'annualLeaveBalance', header: 'Annual Leave Balance', sortable: true },
-  { field: 'notes', header: 'Notes', sortable: true, searchable: true, filterType: 'text' },
-  { field: 'departmentId', header: 'Departman', sortable: true },
-  { field: 'branchId', header: 'Şube', sortable: true },
-  { field: 'employeeId', header: 'Personel', sortable: true },
-  { field: 'onboardingId', header: 'İşe Alım / Oryantasyon', sortable: true },
+  { field: 'registrationNumber', header: "Registration Number", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'fullName', header: "Full Name", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'email', header: "Email", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'title', header: "Title", sortable: true, searchable: true, filterType: 'text' },
+  { field: 'isActive', header: "Is Active", sortable: true, filterType: 'checkbox', filterOptions: [{ label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }], html: (row: Record<string, unknown>) => row.isActive ? '<span style="color:#2e7d32;font-weight:600">Yes</span>' : '<span style="color:#999">No</span>' },
+  { field: 'userId', header: "Kullanıcı (Sistem)", sortable: true },
+  { field: 'departmentId', header: "Birim", sortable: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -106,6 +68,24 @@ export const EmployeeList: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editRecord, setEditRecord] = useState<EmployeeRecord | null>(null);
   const [selectedRows, setSelectedRows] = useState<EmployeeRecord[]>([]);
+
+  // ?focus=<id> ile gelindiginde kayit dogrudan acilir (My Tasks -> kayit)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const focusId = searchParams.get('focus');
+  const focusedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!focusId || focusedRef.current === focusId) return;
+    focusedRef.current = focusId;
+    const clear = () => {
+      const next = new URLSearchParams(searchParams);
+      next.delete('focus');
+      setSearchParams(next, { replace: true });
+    };
+    Promise.resolve(dataProvider.getOne('Employee', focusId))
+      .then((rec) => { if (rec) setEditRecord(rec as EmployeeRecord); })
+      .catch(() => { /* kayit bulunamadi — liste normal acilir */ })
+      .finally(clear);
+  }, [focusId]);
   const { triggerFlows } = useFlows();
   const del = useDeleteMutation('Employee', (ids) => { ids.forEach(id => triggerFlows('delete', 'Employee', { id })); });
 

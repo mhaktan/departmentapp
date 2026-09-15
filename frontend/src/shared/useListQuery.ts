@@ -28,6 +28,8 @@ export const useListQuery = <T extends Record<string, unknown>>(opts: UseListQue
   const urlFilter: Record<string, string> = {};
   const displayParams: Record<string, string> = {};
   searchParams.forEach((value, key) => {
+    // focus=<id> kayit odaklama icin; API'ye filtre olarak gitmemeli
+    if (key === 'focus') return;
     if (key.startsWith('_d_')) {
       displayParams[key.slice(3)] = value;
     } else {

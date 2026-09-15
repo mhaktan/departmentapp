@@ -6,9 +6,11 @@ namespace DepartmentApp.Departments.Dto
     public class PagedDepartmentResultRequestDto : PagedAndSortedResultRequestDto
     {
         public string Keyword { get; set; }
-        public long? BranchId { get; set; }
-        public string Name { get; set; }
         public string Code { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; }
+        public decimal? AnnualBudget { get; set; }
+        public bool? IsActive { get; set; }
+        public decimal? AnnualBudgetFrom { get; set; }
+        public decimal? AnnualBudgetTo { get; set; }
     }
 }

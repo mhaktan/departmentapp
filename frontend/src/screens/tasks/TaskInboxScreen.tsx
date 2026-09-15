@@ -5,6 +5,23 @@ import { getRequestHeaders } from '../../dataProvider';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
+// entityType -> App.tsx route adi (App.tsx ile ayni kaynaktan uretilir)
+const ENTITY_ROUTES: Record<string, string> = {
+  "department": "Department",
+  "employee": "Employee",
+  "supplier": "Supplier",
+  "expensecategory": "ExpenseCategory",
+  "purchaserequest": "PurchaseRequest",
+  "purchaserequestitem": "PurchaseRequestItem",
+  "quotation": "Quotation",
+  "purchaseorder": "PurchaseOrder"
+};
+
+const routeForTask = (entityType: string): string | null => {
+  const name = ENTITY_ROUTES[(entityType || '').toLowerCase()];
+  return name ? '/' + name : null;
+};
+
 // Auto-logout on 401 (expired token) — same handler as dashboard fetch
 const handle401 = (status: number): boolean => {
   if (status !== 401) return false;
@@ -25,6 +42,15 @@ interface PendingTask {
   creatorName?: string;
 }
 
+/** ABP hata zarfindan okunabilir mesaji cikarir. */
+const parseApiError = (e: unknown): string => {
+  const raw = e instanceof Error ? e.message : String(e);
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed?.error?.message || parsed?.error?.details || raw;
+  } catch { return raw; }
+};
+
 const timeAgo = (dateStr: string) => {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
@@ -40,6 +66,7 @@ export default function TaskInboxScreen() {
   const [filter, setFilter] = React.useState('');
   const [comment, setComment] = React.useState('');
   const [modal, setModal] = React.useState<{ task: PendingTask; action: string } | null>(null);
+  const [error, setError] = React.useState('');
 
   const { data: tasks = [], isLoading } = useQuery<PendingTask[]>({
     queryKey: ['pending-tasks'],
@@ -66,7 +93,9 @@ export default function TaskInboxScreen() {
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pending-tasks'] }); setModal(null); setComment(''); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pending-tasks'] }); setModal(null); setComment(''); setError(''); },
+    // Onay islemi sessizce basarisiz olmamali: durum degismezse kullanici nedenini gormeli.
+    onError: (e: unknown) => setError(parseApiError(e)),
   });
 
   const filtered = tasks.filter(t => {
@@ -100,6 +129,12 @@ export default function TaskInboxScreen() {
         />
       </div>
 
+      {error && (
+        <div style={{ padding: '10px 14px', background: '#ffebee', border: '1px solid #ef9a9a', borderRadius: 6, color: '#c62828', fontSize: 13, marginBottom: 12 }}>
+          {error}
+        </div>
+      )}
+
       {isLoading && <p style={{ color: '#888' }}>Loading...</p>}
 
       {!isLoading && filtered.length === 0 && (
@@ -117,7 +152,14 @@ export default function TaskInboxScreen() {
             display: 'flex', alignItems: 'center', gap: 16,
           }}>
             <div style={{ width: 4, height: 36, borderRadius: 2, background: '#1976d2', flexShrink: 0 }} />
-            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => navigate('/' + task.entityType.toLowerCase() + 's')}>
+            <div
+              style={{ flex: 1, cursor: routeForTask(task.entityType) ? 'pointer' : 'default' }}
+              title={routeForTask(task.entityType) ? 'Kayda git' : undefined}
+              onClick={() => {
+                const route = routeForTask(task.entityType);
+                if (route) navigate(route + '?focus=' + encodeURIComponent(task.entityId));
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
                 <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: '#e3f2fd', color: '#1565c0', fontWeight: 600 }}>{task.entityType}</span>
                 {task.formNo && <span style={{ fontSize: 12, fontWeight: 600 }}>{task.formNo}</span>}

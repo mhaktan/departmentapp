@@ -30,8 +30,8 @@ namespace DepartmentApp.Tests.Employees
             // Arrange
             var entities = new[]
             {
-                new Employee { Id = 1, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 },
-                new Employee { Id = 2, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 },
+                new Employee { Id = 1, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true },
+                new Employee { Id = 2, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true },
             }.AsQueryable();
 
             _repositoryMock.Setup(r => r.GetAll()).Returns(entities);
@@ -50,8 +50,8 @@ namespace DepartmentApp.Tests.Employees
             // Arrange
             var entities = new[]
             {
-                new Employee { Id = 1, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 },
-                new Employee { Id = 2, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 },
+                new Employee { Id = 1, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true },
+                new Employee { Id = 2, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true },
             }.AsQueryable();
 
             _repositoryMock.Setup(r => r.GetAll()).Returns(entities);
@@ -70,13 +70,13 @@ namespace DepartmentApp.Tests.Employees
             // Arrange
             var dto = new CreateEmployeeDto
             {
-                EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0
+                RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true
             };
 
             _repositoryMock.Setup(r => r.InsertAndGetIdAsync(It.IsAny<Employee>()))
                 .ReturnsAsync(1);
             _repositoryMock.Setup(r => r.GetAsync(It.IsAny<long>()))
-                .ReturnsAsync(new Employee { Id = 1, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 });
+                .ReturnsAsync(new Employee { Id = 1, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true });
 
             // Act & Assert
             _service.Should().NotBeNull();
@@ -87,7 +87,7 @@ namespace DepartmentApp.Tests.Employees
         {
             // Arrange
             _repositoryMock.Setup(r => r.GetAsync(It.IsAny<long>()))
-                .ReturnsAsync(new Employee { Id = 1, EmployeeNumber = "Test employeeNumber", FirstName = "Test firstName", LastName = "Test lastName", Email = "Test email", HireDate = DateTime.UtcNow, EmploymentType = 0, Status = 0 });
+                .ReturnsAsync(new Employee { Id = 1, RegistrationNumber = "Test registrationNumber", FullName = "Test fullName", Email = "Test email", IsActive = true });
 
             // Act & Assert
             await _service.Invoking(s => s.DeleteAsync(new Abp.Application.Services.Dto.EntityDto<long> { Id = 1 }))

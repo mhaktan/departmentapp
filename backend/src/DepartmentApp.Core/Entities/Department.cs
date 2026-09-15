@@ -11,25 +11,20 @@ namespace DepartmentApp.Entities
     public class Department : FullAuditedEntity<long>
     {
         [Required]
-        [MaxLength(200)]
-        public string Name { get; set; }
-
         [MaxLength(20)]
         public string Code { get; set; }
 
-        [MaxLength(1000)]
-        public string Description { get; set; }
+        [Required]
+        [MaxLength(200)]
+        public string Name { get; set; }
 
-        public long BranchId { get; set; }
+        public decimal? AnnualBudget { get; set; }
 
-        [ForeignKey(nameof(BranchId))]
-        public virtual Branch Branch { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; }
 
-        public virtual ICollection<JobPosting> JobPostings { get; set; }
-
-        public virtual ICollection<TrainingPlan> TrainingPlans { get; set; }
+        public virtual ICollection<PurchaseRequest> PurchaseRequests { get; set; }
 
     }
 }

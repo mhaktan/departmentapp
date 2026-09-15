@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
@@ -8,6 +10,9 @@ using Abp.Extensions;
 using Abp.Linq.Extensions;
 using DepartmentApp.Entities;
 using DepartmentApp.Employees.Dto;
+using DepartmentApp.Analytics.Dto;
+using DepartmentApp.PurchaseRequests.Dto;
+using DepartmentApp.Approvals.Dto;
 using DepartmentApp.Authorization;
 using DepartmentApp.Flows;
 
@@ -41,49 +46,17 @@ namespace DepartmentApp.Employees
             return Repository.GetAll()
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x =>
                     x.Id.ToString().Contains(input.Keyword) ||
-                    (x.EmployeeNumber != null && x.EmployeeNumber.Contains(input.Keyword)) ||
-                    (x.FirstName != null && x.FirstName.Contains(input.Keyword)) ||
-                    (x.LastName != null && x.LastName.Contains(input.Keyword)) ||
+                    (x.RegistrationNumber != null && x.RegistrationNumber.Contains(input.Keyword)) ||
+                    (x.FullName != null && x.FullName.Contains(input.Keyword)) ||
                     (x.Email != null && x.Email.Contains(input.Keyword)) ||
-                    (x.Phone != null && x.Phone.Contains(input.Keyword)) ||
-                    (x.NationalId != null && x.NationalId.Contains(input.Keyword)) ||
-                    (x.Address != null && x.Address.Contains(input.Keyword)) ||
-                    (x.JobTitle != null && x.JobTitle.Contains(input.Keyword)) ||
-                    (x.EmergencyContactName != null && x.EmergencyContactName.Contains(input.Keyword)) ||
-                    (x.EmergencyContactPhone != null && x.EmergencyContactPhone.Contains(input.Keyword)) ||
-                    (x.EmergencyContactRelation != null && x.EmergencyContactRelation.Contains(input.Keyword)) ||
-                    (x.BankAccountNumber != null && x.BankAccountNumber.Contains(input.Keyword)) ||
-                    (x.BankName != null && x.BankName.Contains(input.Keyword)) ||
-                    (x.TaxNumber != null && x.TaxNumber.Contains(input.Keyword)) ||
-                    (x.SocialSecurityNumber != null && x.SocialSecurityNumber.Contains(input.Keyword)) ||
-                    (x.Notes != null && x.Notes.Contains(input.Keyword)))
-                .WhereIf(!input.EmployeeNumber.IsNullOrWhiteSpace(), x => x.EmployeeNumber != null && x.EmployeeNumber.Contains(input.EmployeeNumber))
-                .WhereIf(!input.FirstName.IsNullOrWhiteSpace(), x => x.FirstName != null && x.FirstName.Contains(input.FirstName))
-                .WhereIf(!input.LastName.IsNullOrWhiteSpace(), x => x.LastName != null && x.LastName.Contains(input.LastName))
+                    (x.Title != null && x.Title.Contains(input.Keyword)))
+                .WhereIf(!input.RegistrationNumber.IsNullOrWhiteSpace(), x => x.RegistrationNumber != null && x.RegistrationNumber.Contains(input.RegistrationNumber))
+                .WhereIf(!input.FullName.IsNullOrWhiteSpace(), x => x.FullName != null && x.FullName.Contains(input.FullName))
                 .WhereIf(!input.Email.IsNullOrWhiteSpace(), x => x.Email != null && x.Email.Contains(input.Email))
-                .WhereIf(!input.Phone.IsNullOrWhiteSpace(), x => x.Phone != null && x.Phone.Contains(input.Phone))
-                .WhereIf(!input.NationalId.IsNullOrWhiteSpace(), x => x.NationalId != null && x.NationalId.Contains(input.NationalId))
-                .WhereIf(!input.Address.IsNullOrWhiteSpace(), x => x.Address != null && x.Address.Contains(input.Address))
-                .WhereIf(!input.JobTitle.IsNullOrWhiteSpace(), x => x.JobTitle != null && x.JobTitle.Contains(input.JobTitle))
-                .WhereIf(!input.EmergencyContactName.IsNullOrWhiteSpace(), x => x.EmergencyContactName != null && x.EmergencyContactName.Contains(input.EmergencyContactName))
-                .WhereIf(!input.EmergencyContactPhone.IsNullOrWhiteSpace(), x => x.EmergencyContactPhone != null && x.EmergencyContactPhone.Contains(input.EmergencyContactPhone))
-                .WhereIf(!input.EmergencyContactRelation.IsNullOrWhiteSpace(), x => x.EmergencyContactRelation != null && x.EmergencyContactRelation.Contains(input.EmergencyContactRelation))
-                .WhereIf(!input.BankAccountNumber.IsNullOrWhiteSpace(), x => x.BankAccountNumber != null && x.BankAccountNumber.Contains(input.BankAccountNumber))
-                .WhereIf(!input.BankName.IsNullOrWhiteSpace(), x => x.BankName != null && x.BankName.Contains(input.BankName))
-                .WhereIf(!input.TaxNumber.IsNullOrWhiteSpace(), x => x.TaxNumber != null && x.TaxNumber.Contains(input.TaxNumber))
-                .WhereIf(!input.SocialSecurityNumber.IsNullOrWhiteSpace(), x => x.SocialSecurityNumber != null && x.SocialSecurityNumber.Contains(input.SocialSecurityNumber))
-                .WhereIf(!input.Notes.IsNullOrWhiteSpace(), x => x.Notes != null && x.Notes.Contains(input.Notes))
-                .WhereIf(input.BirthDate.HasValue, x => x.BirthDate == input.BirthDate.Value)
-                .WhereIf(input.Gender.HasValue, x => x.Gender == (EmployeeGender)input.Gender.Value)
-                .WhereIf(input.HireDate.HasValue, x => x.HireDate == input.HireDate.Value)
-                .WhereIf(input.TerminationDate.HasValue, x => x.TerminationDate == input.TerminationDate.Value)
-                .WhereIf(input.EmploymentType.HasValue, x => x.EmploymentType == (EmployeeEmploymentType)input.EmploymentType.Value)
-                .WhereIf(input.Status.HasValue, x => x.Status == (EmployeeStatus)input.Status.Value)
-                .WhereIf(input.AnnualLeaveBalance.HasValue, x => x.AnnualLeaveBalance == input.AnnualLeaveBalance.Value)
-                .WhereIf(input.DepartmentId.HasValue, x => x.DepartmentId == input.DepartmentId.Value)
-                .WhereIf(input.BranchId.HasValue, x => x.BranchId == input.BranchId.Value)
-                .WhereIf(input.EmployeeId.HasValue, x => x.EmployeeId == input.EmployeeId.Value)
-                .WhereIf(input.OnboardingId.HasValue, x => x.OnboardingId == input.OnboardingId.Value);
+                .WhereIf(!input.Title.IsNullOrWhiteSpace(), x => x.Title != null && x.Title.Contains(input.Title))
+                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive.Value)
+                .WhereIf(input.UserId.HasValue, x => x.UserId == input.UserId.Value)
+                .WhereIf(input.DepartmentId.HasValue, x => x.DepartmentId == input.DepartmentId.Value);
         }
 
         public override async Task<EmployeeDto> CreateAsync(CreateEmployeeDto input)
@@ -105,5 +78,67 @@ namespace DepartmentApp.Employees
             await base.DeleteAsync(input);
             await _flowEngine.TriggerAsync("on-delete", "Employee", new { Id = input.Id });
         }
+        [Abp.Authorization.AbpAuthorize(PermissionNames.Employee_Read)]
+        public List<GroupCountDto> GetGroupedCount(EmployeeGroupedCountInput input)
+        {
+            // Whitelist — istemciden gelen alan adı doğrudan sorguya girmez.
+            var allowed = new[] { "UserId", "DepartmentId" };
+            if (input.GroupBy == null || !allowed.Contains(input.GroupBy))
+            {
+                throw new Abp.UI.UserFriendlyException(
+                    $"Gruplanabilir alan degil: {input.GroupBy}. Izin verilenler: {string.Join(", ", allowed)}");
+            }
+
+            var query = CreateFilteredQuery(input);
+
+            switch (input.GroupBy)
+            {
+                case "UserId":
+                    return query
+                        .GroupBy(x => new { Key = x.UserId, Label = x.User == null ? null : x.User.Name })
+                        .Select(g => new GroupCountDto
+                        {
+                            Key = g.Key.Key.ToString(),
+                            Label = g.Key.Label ?? "(bos)",
+                            Count = g.Count(),
+                        })
+                        .ToList();
+                case "DepartmentId":
+                    return query
+                        .GroupBy(x => new { Key = x.DepartmentId, Label = x.Department == null ? null : x.Department.Name })
+                        .Select(g => new GroupCountDto
+                        {
+                            Key = g.Key.Key.ToString(),
+                            Label = g.Key.Label ?? "(bos)",
+                            Count = g.Count(),
+                        })
+                        .ToList();
+                default:
+                    return new List<GroupCountDto>();
+            }
+        }
+
+        /// <summary>
+        /// Rapor verisi — kok kayit ve alt koleksiyonlar TEK yanitta.
+        /// PDF sablonu template basina tek apiBinding kullaniyor.
+        /// </summary>
+        [Abp.Authorization.AbpAuthorize(PermissionNames.Employee_Read)]
+        public async Task<EmployeeReportDto> GetReportData(long id)
+        {
+            var root = await Repository.GetAll()
+                .Include(x => x.PurchaseRequests)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (root == null)
+                throw new Abp.UI.UserFriendlyException($"Kayit bulunamadi: {id}");
+
+            return new EmployeeReportDto
+            {
+                Data = ObjectMapper.Map<EmployeeDto>(root),
+                PurchaseRequests = ObjectMapper.Map<List<PurchaseRequestDto>>(
+                    root.PurchaseRequests == null ? new List<PurchaseRequest>() : root.PurchaseRequests.ToList()),
+            };
+        }
+
     }
 }

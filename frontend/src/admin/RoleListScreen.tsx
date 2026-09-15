@@ -1,6 +1,7 @@
 import React from 'react';
-import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable, TkDialog } from '@takeoff-ui/react';
+import { TkButton, TkInput, TkCheckbox, TkSelect, TkTable } from '@takeoff-ui/react';
 import { actionColumn, registerCrudHandler } from '../shared/ActionButtons';
+import { DeleteConfirmDialog } from '../shared/DeleteConfirmDialog';
 import { roleApi, type AppRoleDto } from './rbacApi';
 import { PermissionPicker } from './PermissionPicker';
 
@@ -60,12 +61,7 @@ export default function RoleListScreen() {
       {error && <div style={{ padding: 12, background: '#fdecea', color: '#d32f2f', borderRadius: 4, marginBottom: 12 }}>{error}</div>}
 
       <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 6, overflow: 'hidden' }}>
-        <TkTable
-          data={rows}
-          columns={columns}
-          dataKey="id"
-          loading={loading}
-        />
+        <TkTable data={rows} columns={columns as any} dataKey="id" loading={loading} />
         {roles.length === 0 && !loading && (
           <div style={{ padding: 24, textAlign: 'center', color: '#999' }}>No roles yet.</div>
         )}
@@ -74,20 +70,18 @@ export default function RoleListScreen() {
       <RoleCreateModal open={showCreate} onClose={() => setShowCreate(false)} onSuccess={load} />
       <RoleEditModal role={editRole} onClose={() => setEditRole(null)} onSuccess={load} />
 
-      <TkDialog visible={!!confirmDelete} header="Delete role" onTkClose={() => setConfirmDelete(null)}>
-        <div slot="content" style={{ padding: 16, fontSize: 14 }}>
-          Are you sure you want to delete "<strong>{confirmDelete?.name}</strong>"? This action cannot be undone.
-        </div>
-        <div slot="footer" style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', padding: '12px 16px' }}>
-          <TkButton label="Cancel" variant="neutral" onTkClick={() => setConfirmDelete(null)} />
-          <TkButton label="Delete" variant="danger" onTkClick={() => {
-            if (!confirmDelete) return;
-            const r = confirmDelete;
-            roleApi.delete(r.id).then(load).catch(e => alert(e.message));
-            setConfirmDelete(null);
-          }} />
-        </div>
-      </TkDialog>
+      <DeleteConfirmDialog
+        visible={!!confirmDelete}
+        label={confirmDelete?.name ?? ''}
+        isPending={false}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={() => {
+          if (!confirmDelete) return;
+          const r = confirmDelete;
+          roleApi.delete(r.id).then(load).catch(e => alert(e.message));
+          setConfirmDelete(null);
+        }}
+      />
     </div>
   );
 }

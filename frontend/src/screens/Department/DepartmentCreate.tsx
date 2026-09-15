@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { TkButton, TkInput, TkSelect } from '@takeoff-ui/react';
+import { TkButton, TkInput } from '@takeoff-ui/react';
 import { dataProvider } from '../../dataProvider';
 import { overlayStyle, modalStyle } from '../../styles';
-import { LookupSelect } from '../../shared/LookupSelect';
 import { useFlows } from '../../flows/FlowProvider';
 
 type DepartmentRecord = {
   id: string | number;
+  code: string;
   name: string;
-  code?: string;
-  description?: string;
-  branchId: string;
+  annualBudget?: number;
+  isActive: boolean;
 };
 
 interface DepartmentCreateProps {
@@ -44,16 +43,19 @@ export const DepartmentCreate: React.FC<DepartmentCreateProps> = ({ open, onClos
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 28px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
+                  <TkInput mode="text" label="Code *" value={String(form.code ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('code', v))(e.detail)} />
+                </div>
+                <div>
                   <TkInput mode="text" label="Name *" value={String(form.name ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('name', v))(e.detail)} />
                 </div>
                 <div>
-                  <TkInput mode="text" label="Code" value={String(form.code ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('code', v))(e.detail)} />
+                  <TkInput mode="number" label="Annual Budget" value={String(form.annualBudget ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('annualBudget', Number(v)))(e.detail)} />
                 </div>
                 <div>
-                  <TkInput mode="text" label="Description" value={String(form.description ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('description', v))(e.detail)} />
-                </div>
-                <div>
-                  <LookupSelect label="Şube *" resource="Branch" value={String(form.branchId ?? '')} onChange={(v) => setField('branchId', v)} />
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                    <input type="checkbox" checked={!!form.isActive} onChange={(e) => ((v) => setField('isActive', v))(e.target.checked)} style={{ width: 16, height: 16 }} />
+                    Is Active *
+                  </label>
                 </div>
             </div>
           </div>

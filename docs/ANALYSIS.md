@@ -4,34 +4,77 @@
 
 ## Orijinal Talep
 
-bir insan kaynakları yönetim portalı istiyorum
+Kurumsal bir "Satın Alma Talep ve Onay Yönetim Sistemi" istiyorum.
+
+## Master data / parametre entity'leri:
+
+- Department (Birim): birim kodu, birim adı, yıllık bütçe, aktif/pasif
+- Employee (Personel): sicil numarası, ad soyad, e-posta, birim (Department
+  ilişkili), unvan, aktif/pasif
+- Supplier (Tedarikçi): tedarikçi kodu, tedarikçi adı, vergi numarası,
+  iletişim kişisi, e-posta, aktif/pasif
+- ExpenseCategory (Harcama Kalemi): kalem kodu, kalem adı (örn. BT Donanım,
+  Danışmanlık, Sarf Malzeme), aktif/pasif
+
+## Operasyonel entity'ler:
+
+- PurchaseRequest (Satın Alma Talebi): talep numarası, talep eden (Employee
+  ilişkili), talep eden birim (Department ilişkili), harcama kalemi
+  (ExpenseCategory ilişkili), gerekçe, toplam tutar, ihtiyaç tarihi,
+  red gerekçesi, durum
+- PurchaseRequestItem (Talep Kalemi): talep (PurchaseRequest ilişkili),
+  ürün/hizmet adı, miktar, birim fiyat, satır tutarı — bir talepte birden
+  fazla kalem olabilir
+- Quotation (Teklif): talep (PurchaseRequest ilişkili), tedarikçi (Supplier
+  ilişkili), teklif tutarı, teklif tarihi, seçildi mi
+- PurchaseOrder (Sipariş): talep (PurchaseRequest ilişkili), sipariş numarası,
+  tedarikçi (Supplier ilişkili), sipariş tarihi, teslim tarihi, sipariş tutarı
+
+Toplam 8 entity olsun, fazlasını ekleme.
+
+## RBAC rolleri:
+
+Requester (Talep Eden), DepartmentManager (Birim Müdürü), FinanceApprover
+(Finans Onaycısı), PurchasingOfficer (Satın Alma Sorumlusu) sistem rolleri olsun.
+
+## Onay akışı (state machine) — PurchaseRequest için:
+
+Draft → PendingManagerApproval → PendingFinanceApproval → Approved → Ordered
+
+Onay adımları ROL bazlı olsun:
+
+- PendingManagerApproval adımı DepartmentManager rolüne atansın.
+- PendingFinanceApproval adımı FinanceApprover rolüne atansın.
+- Approved → Ordered geçişini PurchasingOfficer rolü yapsın.
+- Herhangi bir onaycı reddederse talep Draft'a geri dönsün (revizyon) ve
+  red gerekçesi zorunlu olsun.
+
+Kural: Draft'tan onaya göndermek için talebin en az bir PurchaseRequestItem
+kaydı bulunsun.
+Kural: Approved'dan Ordered'a geçmek için talebin seçilmiş en az bir Quotation
+kaydı bulunsun.
+
+## Dashboard:
+
+- Onayımı bekleyen talep sayısı
+- Durum bazında talep dağılımı
+- Birim bazında talep tutarı dağılımı
+- Ortalama onay süresi (gün) — talep tarihinden onay tarihine
+- İhtiyaç tarihi geçmiş, hâlâ onaylanmamış talepler listesi
 
 ## Özet
 
-Bu uygulama, şirketin insan kaynakları süreçlerini uçtan uca dijital olarak yönetir. Personel özlük bilgilerinden izin yönetimine, işe alımdan performans değerlendirmeye, eğitim takibinden maaş kayıtlarına, fazla mesai girişinden disiplin kayıtlarına kadar tüm İK operasyonlarını tek bir platformda bir araya getirir.
+Bu uygulama, kurum çalışanlarının satın alma taleplerini dijital ortamda oluşturmasını, birim müdürü ve finans ekibinin sırayla onaylamasını, satın alma sorumlusunun tedarikçilerden teklif alıp sipariş oluşturmasını ve oluşturulan siparişlerin satın alma müdürü tarafından onaylanmasını sağlar. Tüm süreç kayıt altına alınır ve şeffaf bir şekilde izlenebilir.
 
-İK Uzmanı yeni personel kaydı oluşturur; kişisel bilgi, iletişim, sertifikalar ve maaş bilgileri sisteme işlenir. Personel izin talebi oluşturduğunda önce departman müdürü onaylar; izin türü İK onayı gerektiriyorsa ardından İK uzmanı da onaylar — herhangi biri revize isterse form oluşturana geri döner. Yılda bir (veya dönemsel) performans değerlendirmesi açılır: çalışan öz değerlendirme yapar, yönetici puan ekler, seçilen akranlar anonim geri bildirim verir, İK nihai onayı verir. İşe alımda ilan yayımlanır, başvurular ön eleme → mülakat → teklif aşamalarından geçer; teklif kabul edilince oryantasyon başlar ve yeni personel kaydına dönüşür. Eğitimler plan bazında takip edilir; katılım ve sertifika bilgileri personel dosyasına işlenir. Departman müdürleri çalışan için fazla mesai kaydını onaylar; disiplin olayları da kayıt altına alınır.
+Çalışan bir satın alma talebi oluşturur, ürün/hizmet kalemlerini ekler ve onaya gönderir. İlk olarak birim müdürü talebi inceler; onaylarsa finans ekibine geçer, reddederse talep gerekçeyle birlikte çalışana geri döner. Finans onayı tamamlandığında talep 'Onaylandı' durumuna geçer. Satın alma sorumlusu tedarikçilerden teklif alır, uygun teklifi seçer ve siparişi oluşturur. Sipariş, satın alma müdürüne onay için gönderilir; onaylanırsa süreç tamamlanır, revize istenirse sipariş düzenlenerek yeniden onaya sunulur.
 
 ## Kapsam
 
-- Personel sicil yönetimi — kişisel bilgi, iletişim, sertifika, acil durum kişisi, banka/vergi bilgisi
-- İzin yönetimi — requiresHRApproval bayrağına göre tek veya çift kademeli onay; onay sonrası bakiye otomatik düşülür
-- Performans değerlendirme — öz değerlendirme → yönetici → peer (yönetici atar) → İK zinciri
-- İşe alım — ilan, başvuru, mülakat, teklif, onboarding ve personel kaydına dönüşüm
-- Maaş kaydı — brüt/net maaş ve kesinti takibi (tarihsel geçmiş korunur)
-- Eğitim yönetimi — plan, eğitim takibi, katılım ve sertifika
-- Fazla mesai takibi — çalışan girişi + Departman Müdürü onay akışı
-- Disiplin / uyarı kayıtları — itiraz akışı: Open→UnderReview→Resolved veya Appealed→Closed; Appealed aşamasını İK Müdürü çözümler
-- Çok şubeli / çok departmanlı yapı — Departman Müdürü → İK Uzmanı hiyerarşisi
+- (belirtilmedi)
 
 ## Kapsam Dışı
 
-- Dosya / belge eki yükleme (CV, sertifika belgesi, ödeme makbuzu vb.) — bu sürümde desteklenmiyor
-- SMS veya anlık (push) bildirim — yalnızca e-posta bildirimi desteklenmektedir
-- Bordro hesaplama motoru (vergi, SGK, net maaş otomatik hesaplama) — yalnızca maaş kaydı tutulmaktadır
-- Fazla mesainin maaş kaydına otomatik yansıtılması — kayıt tutulur ancak hesaplama motoru yoktur
-- Gerçek zamanlı raporlama / dashboard / analitik — kapsam dışında
-- Takvim entegrasyonu ve izin görselleştirmesi — kapsam dışında
+- (belirtilmedi)
 
 ## Açık Noktalar
 
@@ -39,14 +82,306 @@ Bu uygulama, şirketin insan kaynakları süreçlerini uçtan uca dijital olarak
 
 ## Eksiklikler
 
-- requiresHRApproval bayrağı LeaveType üzerinde tutuluyor; sistem kurulumunda İK ekibi her izin türü için bu değeri doğru set etmeli
-- annualLeaveBalance otomatik düşülmesi için onay sonrası bir tetikleyici gerekiyor — bu backend tarafında event-driven olarak çalışacak, UI'da anlık yansımayacak
-- DisciplinaryRecord'da 'acknowledgedByEmployee' alanı var ancak çalışanın elektronik onay aksiyonu modellenmedi; bu alan manuel olarak İK tarafından işaretlenir
-- PeerReview reviewer'ları yönetici tarafından atanıyor; bu atama şu an PerformanceReview üzerinden ilişki ile yönetilmektedir — ayrı bir 'PeerReviewAssignment' entity'si gelecekte düşünülebilir
+- (belirtilmedi)
 
 ## Öneriler
 
-- LeaveType seed datasını İK Müdürü ile birlikte hazırlayın; requiresHRApproval değerini her tür için netleştirin (yıllık: true, mazeret: false gibi)
-- DisciplinaryRecord Appealed → Closed geçişini İK Müdürü rolüne atayın; bu sayede sıradan İK uzmanları itirazı kapatamazlar
-- PeerReview atamalarının yönetici tarafından yapıldığını süreç dokümanlarına not düşün; sistem otomatik atama yapmıyor
-- Maaş ve disiplin kayıtları hassas veri içerdiğinden rol/izin konfigürasyonunu kurulum öncesi gözden geçirin
+- (belirtilmedi)
+
+## Veri Modeli
+
+```mermaid
+erDiagram
+    User ||--o{ Employee : "1:N"
+    Department ||--o{ Employee : "1:N"
+    Employee ||--o{ PurchaseRequest : "1:N"
+    Department ||--o{ PurchaseRequest : "1:N"
+    ExpenseCategory ||--o{ PurchaseRequest : "1:N"
+    PurchaseRequest ||--o{ PurchaseRequestItem : "1:N"
+    PurchaseRequest ||--o{ Quotation : "1:N"
+    Supplier ||--o{ Quotation : "1:N"
+    PurchaseRequest ||--o{ PurchaseOrder : "1:N"
+    Supplier ||--o{ PurchaseOrder : "1:N"
+    User {
+        long id PK
+        string userName "zorunlu"
+        string emailAddress "zorunlu"
+        string name "opsiyonel"
+        string surname "opsiyonel"
+        bool isActive "opsiyonel"
+    }
+    Department {
+        long id PK
+        string code "zorunlu"
+        string name "zorunlu"
+        decimal annualBudget "opsiyonel"
+        bool isActive "zorunlu"
+    }
+    Employee {
+        long id PK
+        string registrationNumber "zorunlu"
+        string fullName "zorunlu"
+        string email "zorunlu"
+        string title "opsiyonel"
+        bool isActive "zorunlu"
+    }
+    Supplier {
+        long id PK
+        string code "zorunlu"
+        string name "zorunlu"
+        string taxNumber "opsiyonel"
+        string contactPerson "opsiyonel"
+        string email "opsiyonel"
+        bool isActive "zorunlu"
+    }
+    ExpenseCategory {
+        long id PK
+        string code "zorunlu"
+        string name "zorunlu"
+        bool isActive "zorunlu"
+    }
+    PurchaseRequest {
+        long id PK
+        string requestNumber "zorunlu"
+        string justification "zorunlu"
+        decimal totalAmount "opsiyonel"
+        DateTime neededDate "zorunlu"
+        DateTime approvedDate "opsiyonel"
+        string rejectionReason "opsiyonel"
+        enum status "zorunlu"
+    }
+    PurchaseRequestItem {
+        long id PK
+        string productName "zorunlu"
+        decimal quantity "zorunlu"
+        decimal unitPrice "zorunlu"
+        decimal lineTotal "opsiyonel"
+    }
+    Quotation {
+        long id PK
+        DateTime quotationDate "zorunlu"
+        decimal amount "zorunlu"
+        bool isSelected "zorunlu"
+    }
+    PurchaseOrder {
+        long id PK
+        string orderNumber "zorunlu"
+        DateTime orderDate "zorunlu"
+        DateTime deliveryDate "opsiyonel"
+        decimal orderAmount "zorunlu"
+        string notes "opsiyonel"
+        string rejectionReason "opsiyonel"
+        enum status "zorunlu"
+    }
+```
+
+### User — Kullanıcı (Sistem)
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `userName` | string | Evet | 64 |
+| `emailAddress` | string | Evet | 256 |
+| `name` | string | Hayır | 128 |
+| `surname` | string | Hayır | 128 |
+| `isActive` | bool | Hayır | — |
+
+**Neye bağlı:** Employee (1:N, bu tablo "bir" tarafı)
+
+### Department — Birim
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `code` | string | Evet | 20 |
+| `name` | string | Evet | 200 |
+| `annualBudget` | decimal | Hayır | — |
+| `isActive` | bool | Evet | — |
+
+**Neye bağlı:** Employee (1:N, bu tablo "bir" tarafı) · PurchaseRequest (1:N, bu tablo "bir" tarafı)
+
+### Employee — Personel
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `registrationNumber` | string | Evet | 50 |
+| `fullName` | string | Evet | 200 |
+| `email` | string | Evet | 256 |
+| `title` | string | Hayır | 100 |
+| `isActive` | bool | Evet | — |
+
+**Neye bağlı:** User (1:N, bu tablo "çok" tarafı) · Department (1:N, bu tablo "çok" tarafı) · PurchaseRequest (1:N, bu tablo "bir" tarafı)
+
+### Supplier — Tedarikçi
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `code` | string | Evet | 20 |
+| `name` | string | Evet | 200 |
+| `taxNumber` | string | Hayır | 20 |
+| `contactPerson` | string | Hayır | 200 |
+| `email` | string | Hayır | 256 |
+| `isActive` | bool | Evet | — |
+
+**Neye bağlı:** Quotation (1:N, bu tablo "bir" tarafı) · PurchaseOrder (1:N, bu tablo "bir" tarafı)
+
+### ExpenseCategory — Harcama Kalemi
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `code` | string | Evet | 20 |
+| `name` | string | Evet | 200 |
+| `isActive` | bool | Evet | — |
+
+**Neye bağlı:** PurchaseRequest (1:N, bu tablo "bir" tarafı)
+
+### PurchaseRequest — Satın Alma Talebi
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `requestNumber` | string | Evet | 50 |
+| `justification` | string | Evet | 1000 |
+| `totalAmount` | decimal | Hayır | — |
+| `neededDate` | DateTime | Evet | — |
+| `approvedDate` | DateTime | Hayır | — |
+| `rejectionReason` | string | Hayır | 1000 |
+| `status` | enum (Draft,PendingManagerApproval,PendingFinanceApproval,Approved,Ordered) | Evet | — |
+
+**Neye bağlı:** Employee (1:N, bu tablo "çok" tarafı) · Department (1:N, bu tablo "çok" tarafı) · ExpenseCategory (1:N, bu tablo "çok" tarafı) · PurchaseRequestItem (1:N, bu tablo "bir" tarafı) · Quotation (1:N, bu tablo "bir" tarafı) · PurchaseOrder (1:N, bu tablo "bir" tarafı)
+
+### PurchaseRequestItem — Talep Kalemi
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `productName` | string | Evet | 300 |
+| `quantity` | decimal | Evet | — |
+| `unitPrice` | decimal | Evet | — |
+| `lineTotal` | decimal | Hayır | — |
+
+**Neye bağlı:** PurchaseRequest (1:N, bu tablo "çok" tarafı)
+
+### Quotation — Teklif
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `quotationDate` | DateTime | Evet | — |
+| `amount` | decimal | Evet | — |
+| `isSelected` | bool | Evet | — |
+
+**Neye bağlı:** PurchaseRequest (1:N, bu tablo "çok" tarafı) · Supplier (1:N, bu tablo "çok" tarafı)
+
+### PurchaseOrder — Sipariş
+
+| Alan | Tip | Zorunlu | Uzunluk |
+|---|---|---|---|
+| `id` | long | Evet | — |
+| `orderNumber` | string | Evet | 50 |
+| `orderDate` | DateTime | Evet | — |
+| `deliveryDate` | DateTime | Hayır | — |
+| `orderAmount` | decimal | Evet | — |
+| `notes` | string | Hayır | 1000 |
+| `rejectionReason` | string | Hayır | 1000 |
+| `status` | enum (Draft,PendingApproval,Approved,Rejected) | Evet | — |
+
+**Neye bağlı:** PurchaseRequest (1:N, bu tablo "çok" tarafı) · Supplier (1:N, bu tablo "çok" tarafı)
+
+
+## İş Akışları
+
+### Satın Alma Talebi — durum makinesi
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> PendingManagerApproval : Submit
+    PendingManagerApproval --> PendingFinanceApproval : Approve
+    PendingManagerApproval --> Draft : Revise
+    PendingFinanceApproval --> Approved : Approve
+    PendingFinanceApproval --> Draft : Revise
+    Approved --> Ordered : PlaceOrder
+    Ordered --> [*]
+```
+
+**Onay adımları**
+
+| # | Adım | Atanan | Aksiyonlar | Zorunlu alanlar |
+|---|---|---|---|---|
+| 1 | Birim Müdürü Onayı | Rol: `DepartmentManager` | Onayla (approve), Reddet (revise) | `rejectionReason` |
+| 2 | Finans Onayı | Rol: `FinanceApprover` | Onayla (approve), Reddet (revise) | `rejectionReason` |
+
+Reddedilirse kayıt **`Draft`** durumuna döner.
+
+### Sipariş — durum makinesi
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> PendingApproval : Submit
+    PendingApproval --> Approved : Approve (PurchasingManager)
+    PendingApproval --> Draft : Revise (PurchasingManager)
+    Draft --> Rejected : Reject
+    Approved --> [*]
+    Rejected --> [*]
+```
+
+**Onay adımları**
+
+| # | Adım | Atanan | Aksiyonlar | Zorunlu alanlar |
+|---|---|---|---|---|
+| 1 | Satın Alma Onayı | Rol: `PurchasingManager` | Onayla (approve), Revize Et (revise) | `rejectionReason` |
+
+Reddedilirse kayıt **`Draft`** durumuna döner.
+
+### Akış: PurchaseRequest Approval Flow
+
+Auto-generated approval flow for PurchaseRequest. Customize email templates and add conditions as needed.
+
+```mermaid
+flowchart TD
+    PurchaseRequest_approval_trigger(["On PurchaseRequest Submit"])
+    PurchaseRequest_approval_condition{"Status = PendingManagerApproval?"}
+    PurchaseRequest_approval_approval[["PurchaseRequest Approval"]]
+    PurchaseRequest_approval_email["Send Approval Email (send-email)"]
+    PurchaseRequest_approval_completion_trigger(["On PurchaseRequest Approved"])
+    PurchaseRequest_approval_completion_email["Send Completion Email (send-email)"]
+    PurchaseRequest_approval_trigger --> PurchaseRequest_approval_condition
+    PurchaseRequest_approval_condition -->|true| PurchaseRequest_approval_approval
+    PurchaseRequest_approval_approval --> PurchaseRequest_approval_email
+    PurchaseRequest_approval_completion_trigger --> PurchaseRequest_approval_completion_email
+```
+
+### Akış: PurchaseOrder Approval Flow
+
+Auto-generated approval flow for PurchaseOrder. Customize email templates and add conditions as needed.
+
+```mermaid
+flowchart TD
+    PurchaseOrder_approval_trigger(["On PurchaseOrder Submit"])
+    PurchaseOrder_approval_condition{"Status = PendingApproval?"}
+    PurchaseOrder_approval_approval[["PurchaseOrder Approval"]]
+    PurchaseOrder_approval_email["Send Approval Email (send-email)"]
+    PurchaseOrder_approval_completion_trigger(["On PurchaseOrder Approved"])
+    PurchaseOrder_approval_completion_email["Send Completion Email (send-email)"]
+    PurchaseOrder_approval_trigger --> PurchaseOrder_approval_condition
+    PurchaseOrder_approval_condition -->|true| PurchaseOrder_approval_approval
+    PurchaseOrder_approval_approval --> PurchaseOrder_approval_email
+    PurchaseOrder_approval_completion_trigger --> PurchaseOrder_approval_completion_email
+```
+
+
+## Elle Geliştirme Gerektirenler
+
+Aşağıdaki maddeler senaryonun gereği ama üretilen koda yansımıyor — kod yazılması gerekir.
+
+| Alan | İş | Neden | Geçici çözüm |
+|---|---|---|---|
+| entity | Toplam tutar ve satır tutarı otomatik hesaplanmaz | lineTotal (miktar × birim fiyat) ve PurchaseRequest.totalAmount (kalemlerin toplamı) hesaplanmış alanlar; platform düz saklar, otomatik hesaplama üretilmez. | lineTotal ve totalAmount normal alanlar olarak bırakıldı; kullanıcı girer veya ileride özel geliştirmeyle hesaplanabilir. |
+| approval | Seçilmiş teklif sayısı guard'ı yalnızca 'Quotation kaydı var mı' kontrolü yapar | child-exists guard'ı bağlı kayıt varlığını kontrol eder; isSelected=true filtresini değerlendiremez. Approved→Ordered geçişi için guard 'en az 1 Quotation kaydı' olarak kuruldu, isSelected=true koşulu denetlenemez. | PurchasingOfficer sipariş oluşturmadan önce teklif seçimini manuel doğrular. |
+| entity | Talep ve sipariş numarası otomatik sıralı üretilmez | Sequence/numaratör üretimi desteklenmiyor; requestNumber ve orderNumber düz string alan olarak saklanır. | Kullanıcı kendi numarasını girer. |
+| flow | Sipariş oluşunca talebin durumu otomatik Ordered'a geçmez | Çapraz kayıt otomasyonu (PurchaseOrder kaydedilince PurchaseRequest.status güncellenmesi) desteklenmiyor. | PurchasingOfficer sipariş oluşturduktan sonra talep üzerinde 'PlaceOrder' geçişini manuel tetikler. |

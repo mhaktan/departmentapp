@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using DepartmentApp.Analytics.Dto;
 using DepartmentApp.Departments.Dto;
 
 namespace DepartmentApp.Departments
@@ -14,5 +15,7 @@ namespace DepartmentApp.Departments
         CreateDepartmentDto,
         DepartmentDto>
     {
+        decimal? GetStats(DepartmentStatsInput input);
+        Task<DepartmentReportDto> GetReportData(long id);
     }
 }
