@@ -1,11 +1,11 @@
 {
-  "id": "report-purchaseOrder-1789462059693",
+  "id": "report-purchaseOrder-1789463133498",
   "name": "Sipariş Detay Raporu",
   "orientation": "portrait",
   "pageSize": "a4",
   "elements": [
     {
-      "id": "pdf-mu2fia3x-17",
+      "id": "pdf-mu2g5anu-17",
       "type": "header",
       "x": 20,
       "y": 25,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-18",
+      "id": "pdf-mu2g5anu-18",
       "type": "divider",
       "x": 20,
       "y": 39,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-19",
+      "id": "pdf-mu2g5anu-19",
       "type": "textbox",
       "x": 20,
       "y": 45,
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-20",
+      "id": "pdf-mu2g5anu-20",
       "type": "textbox",
       "x": 20,
       "y": 56,
@@ -55,7 +55,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-21",
+      "id": "pdf-mu2g5anu-21",
       "type": "textbox",
       "x": 20,
       "y": 66,
@@ -68,7 +68,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-22",
+      "id": "pdf-mu2g5anu-22",
       "type": "textbox",
       "x": 20,
       "y": 76,
@@ -81,7 +81,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-23",
+      "id": "pdf-mu2g5anu-23",
       "type": "textbox",
       "x": 20,
       "y": 86,
@@ -94,7 +94,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-24",
+      "id": "pdf-mu2g5anu-24",
       "type": "textbox",
       "x": 20,
       "y": 96,
@@ -107,7 +107,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-25",
+      "id": "pdf-mu2g5anu-25",
       "type": "textbox",
       "x": 20,
       "y": 106,
@@ -120,7 +120,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-26",
+      "id": "pdf-mu2g5anu-26",
       "type": "textbox",
       "x": 20,
       "y": 116,
@@ -133,7 +133,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-27",
+      "id": "pdf-mu2g5anu-27",
       "type": "textbox",
       "x": 20,
       "y": 128,
@@ -146,7 +146,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-28",
+      "id": "pdf-mu2g5anu-28",
       "type": "table",
       "x": 20,
       "y": 139,

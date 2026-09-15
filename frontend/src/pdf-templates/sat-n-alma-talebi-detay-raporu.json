@@ -1,11 +1,11 @@
 {
-  "id": "report-purchaseRequest-1789462059693",
+  "id": "report-purchaseRequest-1789463133498",
   "name": "Satın Alma Talebi Detay Raporu",
   "orientation": "portrait",
   "pageSize": "a4",
   "elements": [
     {
-      "id": "pdf-mu2fia3w-0",
+      "id": "pdf-mu2g5ant-0",
       "type": "header",
       "x": 20,
       "y": 25,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-1",
+      "id": "pdf-mu2g5ant-1",
       "type": "divider",
       "x": 20,
       "y": 39,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-2",
+      "id": "pdf-mu2g5ant-2",
       "type": "textbox",
       "x": 20,
       "y": 45,
@@ -42,7 +42,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-3",
+      "id": "pdf-mu2g5ant-3",
       "type": "textbox",
       "x": 20,
       "y": 56,
@@ -55,7 +55,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-4",
+      "id": "pdf-mu2g5ant-4",
       "type": "textbox",
       "x": 20,
       "y": 66,
@@ -68,7 +68,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-5",
+      "id": "pdf-mu2g5ant-5",
       "type": "textbox",
       "x": 20,
       "y": 76,
@@ -81,7 +81,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-6",
+      "id": "pdf-mu2g5anu-6",
       "type": "textbox",
       "x": 20,
       "y": 86,
@@ -94,7 +94,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-7",
+      "id": "pdf-mu2g5anu-7",
       "type": "textbox",
       "x": 20,
       "y": 96,
@@ -107,7 +107,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3w-8",
+      "id": "pdf-mu2g5anu-8",
       "type": "textbox",
       "x": 20,
       "y": 106,
@@ -120,7 +120,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-9",
+      "id": "pdf-mu2g5anu-9",
       "type": "textbox",
       "x": 20,
       "y": 118,
@@ -133,7 +133,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-10",
+      "id": "pdf-mu2g5anu-10",
       "type": "table",
       "x": 20,
       "y": 129,
@@ -169,7 +169,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-11",
+      "id": "pdf-mu2g5anu-11",
       "type": "textbox",
       "x": 20,
       "y": 203,
@@ -182,7 +182,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-12",
+      "id": "pdf-mu2g5anu-12",
       "type": "table",
       "x": 20,
       "y": 214,
@@ -213,7 +213,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-13",
+      "id": "pdf-mu2g5anu-13",
       "type": "textbox",
       "x": 20,
       "y": 281,
@@ -226,7 +226,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-14",
+      "id": "pdf-mu2g5anu-14",
       "type": "table",
       "x": 20,
       "y": 292,
@@ -267,7 +267,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-15",
+      "id": "pdf-mu2g5anu-15",
       "type": "textbox",
       "x": 20,
       "y": 373,
@@ -280,7 +280,7 @@
       }
     },
     {
-      "id": "pdf-mu2fia3x-16",
+      "id": "pdf-mu2g5anu-16",
       "type": "table",
       "x": 20,
       "y": 384,

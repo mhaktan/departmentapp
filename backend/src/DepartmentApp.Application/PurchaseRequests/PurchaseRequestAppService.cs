@@ -145,8 +145,10 @@ namespace DepartmentApp.PurchaseRequests
             ("Draft", "PendingManagerApproval", "Submit", false),
             ("PendingManagerApproval", "PendingFinanceApproval", "Approve", false),
             ("PendingManagerApproval", "Draft", "Revise", false),
-            ("PendingFinanceApproval", "Approved", "Approve", false),
+            ("PendingFinanceApproval", "PendingDirectorApproval", "Approve", false),
             ("PendingFinanceApproval", "Draft", "Revise", false),
+            ("PendingDirectorApproval", "Approved", "Approve", false),
+            ("PendingDirectorApproval", "Draft", "Revise", false),
             ("Approved", "Ordered", "PlaceOrder", false)
             };
 
@@ -231,8 +233,10 @@ namespace DepartmentApp.PurchaseRequests
                 ("Draft", "PendingManagerApproval"),
                 ("PendingManagerApproval", "PendingFinanceApproval"),
                 ("PendingManagerApproval", "Draft"),
-                ("PendingFinanceApproval", "Approved"),
+                ("PendingFinanceApproval", "PendingDirectorApproval"),
                 ("PendingFinanceApproval", "Draft"),
+                ("PendingDirectorApproval", "Approved"),
+                ("PendingDirectorApproval", "Draft"),
                 ("Approved", "Ordered")
             };
 

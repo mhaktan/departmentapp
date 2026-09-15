@@ -5,7 +5,8 @@ namespace DepartmentApp.Entities
         Draft = 0,
         PendingManagerApproval = 1,
         PendingFinanceApproval = 2,
-        Approved = 3,
-        Ordered = 4,
+        PendingDirectorApproval = 3,
+        Approved = 4,
+        Ordered = 5,
     }
 }

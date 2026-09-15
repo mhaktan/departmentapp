@@ -8,15 +8,17 @@ export const PurchaseRequestStatusMap: Record<string, string> = {
   '0': 'Draft',
   '1': 'PendingManagerApproval',
   '2': 'PendingFinanceApproval',
-  '3': 'Approved',
-  '4': 'Ordered'
+  '3': 'PendingDirectorApproval',
+  '4': 'Approved',
+  '5': 'Ordered'
 };
 export const PurchaseRequestStatusOptions = [
   { label: 'Draft', value: '0' },
   { label: 'PendingManagerApproval', value: '1' },
   { label: 'PendingFinanceApproval', value: '2' },
-  { label: 'Approved', value: '3' },
-  { label: 'Ordered', value: '4' }
+  { label: 'PendingDirectorApproval', value: '3' },
+  { label: 'Approved', value: '4' },
+  { label: 'Ordered', value: '5' }
 ];
 
 // PurchaseOrder.status

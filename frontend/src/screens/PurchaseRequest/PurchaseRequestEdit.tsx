@@ -73,7 +73,7 @@ export const PurchaseRequestEdit: React.FC<PurchaseRequestEditProps> = ({ record
                   <TkInput mode="text" label="Rejection Reason" value={String(form.rejectionReason ?? '')} onTkChange={(e: CustomEvent) => ((v) => setField('rejectionReason', v))(e.detail)} />
                 </div>
                 <div>
-                  <LookupSelect label="Status *" value={String(form.status ?? '')} onChange={(v) => setField('status', v ? Number(v) : null)} searchable={false} options={[{ label: 'Draft', value: '0' }, { label: 'PendingManagerApproval', value: '1' }, { label: 'PendingFinanceApproval', value: '2' }, { label: 'Approved', value: '3' }, { label: 'Ordered', value: '4' }]} />
+                  <LookupSelect label="Status *" value={String(form.status ?? '')} onChange={(v) => setField('status', v ? Number(v) : null)} searchable={false} options={[{ label: 'Draft', value: '0' }, { label: 'PendingManagerApproval', value: '1' }, { label: 'PendingFinanceApproval', value: '2' }, { label: 'PendingDirectorApproval', value: '3' }, { label: 'Approved', value: '4' }, { label: 'Ordered', value: '5' }]} />
                 </div>
                 <div>
                   <LookupSelect label="Personel *" resource="Employee" value={String(form.employeeId ?? '')} onChange={(v) => setField('employeeId', v)} displayField="fullName" />

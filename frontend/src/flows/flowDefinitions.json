@@ -106,6 +106,24 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "Direktör Onayı",
+              "assigneeType": "role",
+              "assigneeValue": "Director",
+              "actions": [
+                {
+                  "label": "Onayla",
+                  "type": "approve"
+                },
+                {
+                  "label": "Reddet",
+                  "type": "revise",
+                  "requiredFields": [
+                    "rejectionReason"
+                  ]
+                }
+              ]
             }
           ],
           "trackRevisionHistory": true,
@@ -165,29 +183,29 @@
     ],
     "edges": [
       {
-        "id": "gen_1789462059186_1",
+        "id": "gen_1789463132995_1",
         "sourceNodeId": "PurchaseRequest-approval-trigger",
         "targetNodeId": "PurchaseRequest-approval-condition"
       },
       {
-        "id": "gen_1789462059186_2",
+        "id": "gen_1789463132995_2",
         "sourceNodeId": "PurchaseRequest-approval-condition",
         "targetNodeId": "PurchaseRequest-approval-approval",
         "branch": "true"
       },
       {
-        "id": "gen_1789462059186_3",
+        "id": "gen_1789463132995_3",
         "sourceNodeId": "PurchaseRequest-approval-approval",
         "targetNodeId": "PurchaseRequest-approval-email"
       },
       {
-        "id": "gen_1789462059186_4",
+        "id": "gen_1789463132996_4",
         "sourceNodeId": "PurchaseRequest-approval-completion-trigger",
         "targetNodeId": "PurchaseRequest-approval-completion-email"
       }
     ],
-    "createdAt": "2026-09-15T08:47:39.186Z",
-    "updatedAt": "2026-09-15T08:47:39.186Z"
+    "createdAt": "2026-09-15T09:05:32.995Z",
+    "updatedAt": "2026-09-15T09:05:32.995Z"
   },
   {
     "id": "flow-PurchaseOrder-approval",
@@ -337,28 +355,28 @@
     ],
     "edges": [
       {
-        "id": "gen_1789462059186_5",
+        "id": "gen_1789463132996_5",
         "sourceNodeId": "PurchaseOrder-approval-trigger",
         "targetNodeId": "PurchaseOrder-approval-condition"
       },
       {
-        "id": "gen_1789462059186_6",
+        "id": "gen_1789463132996_6",
         "sourceNodeId": "PurchaseOrder-approval-condition",
         "targetNodeId": "PurchaseOrder-approval-approval",
         "branch": "true"
       },
       {
-        "id": "gen_1789462059186_7",
+        "id": "gen_1789463132996_7",
         "sourceNodeId": "PurchaseOrder-approval-approval",
         "targetNodeId": "PurchaseOrder-approval-email"
       },
       {
-        "id": "gen_1789462059186_8",
+        "id": "gen_1789463132996_8",
         "sourceNodeId": "PurchaseOrder-approval-completion-trigger",
         "targetNodeId": "PurchaseOrder-approval-completion-email"
       }
     ],
-    "createdAt": "2026-09-15T08:47:39.186Z",
-    "updatedAt": "2026-09-15T08:47:39.186Z"
+    "createdAt": "2026-09-15T09:05:32.996Z",
+    "updatedAt": "2026-09-15T09:05:32.996Z"
   }
 ]

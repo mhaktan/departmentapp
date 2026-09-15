@@ -233,7 +233,7 @@ export const DashboardScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{ gridColumn: 'span 6' }}>
+        <div style={{ gridColumn: 'span 4' }}>
           {breakdown_purchaseRequest_1Loading ? (
             <UiCard header="Durum Bazında Talep Dağılımı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
@@ -258,7 +258,7 @@ export const DashboardScreen: React.FC = () => {
           </UiCard>
           )}
         </div>
-        <div style={{ gridColumn: 'span 6' }}>
+        <div style={{ gridColumn: 'span 4' }}>
           {breakdown_purchaseRequest_2Loading ? (
             <UiCard header="Birim Bazında Talep Tutarı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
@@ -280,7 +280,7 @@ export const DashboardScreen: React.FC = () => {
           </UiCard>
           )}
         </div>
-        <div style={{ gridColumn: 'span 6' }}>
+        <div style={{ gridColumn: 'span 4' }}>
           {breakdown_purchaseOrder_3Loading ? (
             <UiCard header="Durum Bazında Sipariş Dağılımı" bodyStyle={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>

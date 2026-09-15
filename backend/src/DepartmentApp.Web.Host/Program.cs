@@ -48,7 +48,7 @@ namespace DepartmentApp.Web.Host
                         // Dolu veritabaninda hicbir sey yapmaz — o durumda bekleyen migration'lar
                         // SchemaMigrations.Apply icinde sirayla calistirilir.
                         var freshlyCreated = db.Database.EnsureCreated();
-                        Console.WriteLine("[Migration] Migration tanimi yok — sema EnsureCreated ile yonetiliyor.");
+                        DepartmentApp.EntityFrameworkCore.Migrations.SchemaMigrations.Apply(db, freshlyCreated);
                         Console.WriteLine("[Migration] Database is up to date.");
 
                         // Seed sample data — wrapped in its own try so a failure here doesn't block RBAC seed below.

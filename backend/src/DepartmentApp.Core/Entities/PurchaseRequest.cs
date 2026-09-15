@@ -7,8 +7,8 @@ using Abp.Domain.Entities.Auditing;
 
 namespace DepartmentApp.Entities
 {
-    // State Machine: status — Draft → PendingManagerApproval → PendingFinanceApproval → Approved → Ordered
-    // Initial: Draft | Transitions: Draft→PendingManagerApproval[Submit], PendingManagerApproval→PendingFinanceApproval[Approve], PendingManagerApproval→Draft[Revise], PendingFinanceApproval→Approved[Approve], PendingFinanceApproval→Draft[Revise], Approved→Ordered[PlaceOrder]
+    // State Machine: status — Draft → PendingManagerApproval → PendingFinanceApproval → PendingDirectorApproval → Approved → Ordered
+    // Initial: Draft | Transitions: Draft→PendingManagerApproval[Submit], PendingManagerApproval→PendingFinanceApproval[Approve], PendingManagerApproval→Draft[Revise], PendingFinanceApproval→PendingDirectorApproval[Approve], PendingFinanceApproval→Draft[Revise], PendingDirectorApproval→Approved[Approve], PendingDirectorApproval→Draft[Revise], Approved→Ordered[PlaceOrder]
     [Table("PurchaseRequests")]
     public class PurchaseRequest : FullAuditedEntity<long>
     {
